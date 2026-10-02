@@ -1,0 +1,24 @@
+{
+  "name": "xojazzle_blog",
+  "version": "1.0.0",
+  "description": "A blog website for social media influencer XOJazzle",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JCline11/XOJazzle_Blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JCline11/XOJazzle_Blog/issues"
+  },
+  "homepage": "https://github.com/JCline11/XOJazzle_Blog#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
