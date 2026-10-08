@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Post {
+  id               Int               @id @default(autoincrement())
+  title            String
+  slug             String            @unique
+  excerpt          String
+  body             String
+  featuredImageUrl String?
+  altText          String?
+  category         PostCategory
+  status           PublicationStatus @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model SiteProfile {
+  id              Int      @id @default(autoincrement())
+  siteName        String
+  heroText        String
+  aboutContent    String
+  profileImageUrl String?
+  contactEmail    String?
+  socialLinks     Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum PostCategory {
+  BOOKS
+  MOVIES
+  ANIME
+  TV
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+}

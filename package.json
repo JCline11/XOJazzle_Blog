@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,20 @@
   },
   "homepage": "https://github.com/JCline11/XOJazzle_Blog#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "@prisma/client": "^7.10.0",
+    "bcrypt": "^6.0.0",
+    "connect-pg-simple": "^10.0.0",
+    "dotenv": "^18.0.6",
+    "ejs": "^7.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "method-override": "^3.0.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "prisma": "^7.10.0",
+    "supertest": "^7.3.1"
   }
 }
