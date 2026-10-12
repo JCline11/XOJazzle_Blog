@@ -9,8 +9,8 @@
     "test": "node --test"
   },
   "overrides": {
-  "deepmerge-ts": "^8.0.2",
-  "mysql2": "^3.24.4"
+    "deepmerge-ts": "^8.0.2",
+    "mysql2": "^3.24.4"
   },
   "repository": {
     "type": "git",
