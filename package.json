@@ -8,6 +8,10 @@
     "dev": "node --watch src/server.js",
     "test": "node --test"
   },
+  "overrides": {
+  "deepmerge-ts": "^8.0.2",
+  "mysql2": "^3.24.4"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JCline11/XOJazzle_Blog.git"
@@ -35,5 +39,10 @@
   "devDependencies": {
     "prisma": "^7.10.0",
     "supertest": "^7.3.1"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.10.0": true,
+    "bcrypt@6.0.0": true,
+    "prisma@7.10.0": true
   }
 }
