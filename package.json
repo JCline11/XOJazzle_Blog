@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/JCline11/XOJazzle_Blog#readme",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "bcrypt": "^6.0.0",
     "connect-pg-simple": "^10.0.0",
@@ -34,15 +35,22 @@
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
     "method-override": "^3.0.0",
+    "pg": "^8.23.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
     "prisma": "^7.10.0",
-    "supertest": "^7.3.1"
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
   },
   "allowScripts": {
     "@prisma/engines@7.10.0": true,
     "bcrypt@6.0.0": true,
-    "prisma@7.10.0": true
+    "prisma@7.10.0": true,
+    "esbuild@0.28.2": true
   }
 }
