@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "A blog website for social media influencer XOJazzle",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
-    "test": "node --test"
+    "start": "tsx src/server.ts",
+    "dev": "tsx watch src/server.ts",
+    "test": "node --test",
+    "prisma:generate": "prisma generate"
   },
   "overrides": {
     "deepmerge-ts": "^8.0.2",
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
     "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
     "prisma": "^7.10.0",
