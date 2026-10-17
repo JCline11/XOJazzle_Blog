@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+  <div class="paper-grain" aria-hidden="true"></div>
+  <%- include('../partials/header') %>
+
+  <% const paragraphs = post.body.trim().split(/\r?\n\s*\r?\n/); %>
+
+  <main class="simple-post-page">
+    <article>
+      <!-- Everything visible on this page comes from the post object. -->
+      <header class="simple-post-header section-wrap">
+        <a class="article-back-link" href="/#latest"><span aria-hidden="true">←</span> back to all notes</a>
+
+        <div class="simple-post-title">
+          <p class="eyebrow"><span class="eyebrow-line"></span> <%= post.categoryLabel %> journal</p>
+          <h1><%= post.title %><span class="pink-dot">.</span></h1>
+          <p class="simple-post-excerpt"><%= post.excerpt %></p>
+          <div class="article-meta" aria-label="Post information">
+            <span><%= post.publishedDate %></span>
+            <span aria-hidden="true">✦</span>
+            <span><%= post.readTime %> read</span>
+            <span aria-hidden="true">✦</span>
+            <span>by XOJazzle</span>
+          </div>
+        </div>
+
+        <figure class="simple-post-cover">
+          <span class="tape simple-post-tape" aria-hidden="true"></span>
+          <img src="<%= post.featuredImageUrl %>" alt="<%= post.altText %>">
+          <% if (post.imageCaption) { %><figcaption><%= post.imageCaption %></figcaption><% } %>
+        </figure>
+      </header>
+
+      <!-- The blogger only needs to write one body field with blank lines between paragraphs. -->
+      <div class="simple-post-body section-wrap">
+        <% paragraphs.forEach((paragraph, index) => { %>
+          <p class="<%= index === 0 ? 'simple-post-opening' : '' %>"><%= paragraph %></p>
+
+          <% if (index === 1 && post.pullQuote) { %>
+            <blockquote class="simple-post-quote">
+              <p><%= post.pullQuote %></p>
+            </blockquote>
+          <% } %>
+        <% }) %>
+
+        <% if (post.rating) { %>
+          <aside class="simple-post-rating" aria-label="Post rating">
+            <div>
+              <p class="hand-label">the final verdict</p>
+              <p class="simple-post-stars" aria-label="<%= post.rating %> out of five stars"><%= '★'.repeat(post.rating) %><%= '☆'.repeat(5 - post.rating) %></p>
+            </div>
+            <p><%= post.ratingNote %></p>
+          </aside>
+        <% } %>
+
+        <% if (post.closingNote) { %>
+          <div class="simple-post-note">
+            <span aria-hidden="true">♡</span>
+            <p class="hand-label">one last little note</p>
+            <p><%= post.closingNote %></p>
+            <strong>xo, XOJazzle</strong>
+          </div>
+        <% } %>
+
+        <a class="simple-post-home" href="/">keep wandering through the scrapbook <span>→</span></a>
+      </div>
+    </article>
+  </main>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>
