@@ -9,15 +9,15 @@ export type PostViewModel = {
   body: string;
   featuredImageUrl: string | null;
   altText: string;
-  imageCaption: string;
+  imageCaption: string | null;
   categoryLabel: string;
   publishedDate: string;
   publishedDateTime: string;
   readTime: string;
-  pullQuote: string;
-  rating: number;
-  ratingNote: string;
-  closingNote: string;
+  pullQuote: string | null;
+  rating: number | null;
+  ratingNote: string | null;
+  closingNote: string | null;
 };
 
 const categoryLabels: Record<Post["category"], string> = {

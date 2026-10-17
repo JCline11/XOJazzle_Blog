@@ -26,16 +26,16 @@ model Post {
   body             String
   featuredImageUrl String?
   altText          String?
-  imageCaption 	   String
+  imageCaption 	   String?
   category         PostCategory
   status           PublicationStatus @default(DRAFT)
   publishedAt      DateTime?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  pullQuote		   String
-  rating		   Int
-  ratingNote   	   String
-  closingNote	   String
+  pullQuote		   String?
+  rating		   Int?
+  ratingNote   	   String?
+  closingNote	   String?
 }
 
 model SiteProfile {
