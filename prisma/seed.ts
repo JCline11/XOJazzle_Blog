@@ -82,9 +82,14 @@ async function main() {
 		featuredImageUrl:
 		"https://images.search.yahoo.com/search/images;_ylt=A2RQGOS7K89qxAIAujqJzbkF;_ylu=Y29sbwN1cy13ZXN0LTIEcG9zAzEEdnRpZAMEc2VjA3Ny?fr=mcafee&p=ICE+BREAKER+BOOK+COVER&imgurl=https%3A%2F%2Fd28hgpri8am2if.cloudfront.net%2Fbook_images%2Fonix%2Fcvr9781761420917%2Ficebreaker-9781761420917_hr.jpg",
 		altText: "Illustrated cover of The Secret Garden",
+		imageCaption: "the very best kind of afternoon",
 		category: "BOOKS" as const,
 		status: "PUBLISHED" as const,
 		publishedAt: new Date("2026-10-12T12:00:00.000Z"),
+		pullQuote: "Maybe comfort is not the absence of difficult things. Maybe it is knowing we do not have to meet them alone.",
+		closingNote: "Tell me about the book you reach for when you need a softer day. I am always making room for one more recommendation.",
+		rating: 5,
+		ratingNote: "For maximum coziness, read with a blanket and nowhere else to be.",
 	};
     await prisma.post.upsert({
 		where: {
