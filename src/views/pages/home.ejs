@@ -49,7 +49,19 @@
     </div></section>
 
     <!-- POSTS: Add another article with data-category to extend the filterable grid. -->
-    <section id="latest" class="section-wrap latest-section" aria-labelledby="latest-title"><div class="section-heading heading-row"><div><p class="eyebrow">fresh from the scrapbook</p><h2 id="latest-title">Latest <em>little notes</em></h2></div><div class="filter-tabs" role="group" aria-label="Filter posts by category"><button class="filter active" type="button" data-filter="all">all notes</button><button class="filter" type="button" data-filter="books">books</button><button class="filter" type="button" data-filter="movies">movies</button><button class="filter" type="button" data-filter="personal">personal</button></div></div><div class="posts-grid">
+    <section id="latest" class="section-wrap latest-section" aria-labelledby="latest-title">
+		<div class="section-heading heading-row">
+			<div>
+				<p class="eyebrow">fresh from the scrapbook</p>
+				<h2 id="latest-title">Latest <em>little notes</em></h2>
+			</div>
+			<div class="filter-tabs" role="group" aria-label="Filter posts by category">
+				<button class="filter active" type="button" data-filter="all">all notes</button>
+				<button class="filter" type="button" data-filter="books">books</button>
+				<button class="filter" type="button" data-filter="movies">movies</button>
+				<button class="filter" type="button" data-filter="personal">personal</button>
+			</div>
+		</div>
 		<div class="posts-grid">
 			<% if (latestPosts.length === 0) { %>
 				<div class="empty-posts">
@@ -62,7 +74,7 @@
 				<% }) %>
 			<% } %>
 		</div>
-	</div></section>
+	</section>
 
     <!-- ANIME + TV: This anchor keeps the existing blog categories represented. -->
     <section id="anime" class="category-note section-wrap" aria-labelledby="category-title"><div class="category-note-copy"><p class="eyebrow">for the comfort-watch people</p><h2 id="category-title">TV shows, anime<br>& <em>everything in between</em></h2><p>From a perfect opening theme to a season finale that emotionally ruins me, this is where I keep the shows I can’t stop talking about.</p><a class="text-link" href="#latest">see the latest watch notes <span>→</span></a></div><div class="category-doodle" aria-hidden="true"><span>✦</span><strong>watch<br>list</strong><span>♡</span></div></section>
