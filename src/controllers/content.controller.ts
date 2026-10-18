@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import {
   getHomePageData,
-  getPublishedPostBySlug
+  getPublishedPostBySlug,
+  getSiteProfile
 } from "../services/content.service.ts";
 
 export async function showHomePage(
@@ -30,13 +31,16 @@ export async function showPost(
 		return res.status(404).render("404");
 	}
 
-	const post = await getPublishedPostBySlug(slug);
+	const [post, profile] = await Promise.all([
+		getPublishedPostBySlug(slug),
+		getSiteProfile()
+	]);
 
     if (!post) {
       return res.status(404).render("404");
     }
 
-    return res.render("post", { post });
+    return res.render("post", { post, profile });
   } catch (error) {
     return next(error);
   }

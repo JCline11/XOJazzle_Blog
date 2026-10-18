@@ -63,3 +63,13 @@ export async function getPublishedPostsByCategory(
 
   return databasePosts.map(mapPostToViewModel);
 }
+
+export async function getSiteProfile() {
+  const profile = await prisma.siteProfile.findFirst();
+
+  if (!profile) {
+    throw new Error("Site profile is not configured.");
+  }
+
+  return profile;
+}
