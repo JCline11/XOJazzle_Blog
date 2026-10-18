@@ -52,6 +52,19 @@ So take your time. Fold a blanket around your shoulders, put your phone in anoth
 	res.render("post", { post });
 });
 
+app.use((
+  error: unknown,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  console.error(error);
+
+  res.status(500).send(
+    "Something went wrong while loading the page."
+  );
+});
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
