@@ -1,0 +1,21 @@
+<%
+  const cardColors = ["pink", "sage", "lavender"];
+  const cardColor = cardColors[index % cardColors.length];
+%>
+
+<article class="post-card post-<%= cardColor %>" data-category="<%= post.categoryLabel %>">
+	<div class="post-image">
+		<img src="<%= post.featuredImageUrl %>" alt="<%= post.altText %>">
+		<span class="post-tag"><%= post.categoryLabel %></span>
+	</div>
+	<div class="post-body">
+		<time datetime="<%= post.publishedDateTime %>">
+			<%= post.publishedDate %>
+		</time>
+		<h3><%= post.title %></h3>
+		<p><%= post.excerpt %></p>
+		<a href="<%= post.url %>" class="read-more">read the note <span>→
+		</span>
+		</a>
+	</div>
+</article>

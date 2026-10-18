@@ -21,6 +21,10 @@ export async function getHomePageData() {
     })
   ]);
 
+  if (!profile) {
+	throw new Error("Site profile is not configured.");
+  }
+
   const latestPosts = databasePosts.map(mapPostToViewModel);
 
   return {

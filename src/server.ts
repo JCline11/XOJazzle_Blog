@@ -1,6 +1,7 @@
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { showHomePage } from "./controllers/content.controller.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,9 +16,7 @@ app.set("views", path.join(__dirname, "views", "pages"));
 app.use(express.static(path.join(__dirname,  "..", "public")));
 
 // Homepage route
-app.get("/", (req, res) => {
-	res.render("home");
-});
+app.get("/", showHomePage);
 
 // Temporary article preview route.
 // Later, replace this object with a post fetched from the database by its slug.
