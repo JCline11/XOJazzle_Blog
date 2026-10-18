@@ -74,14 +74,13 @@ async function main() {
 		},
 	});
     const samplePost = {
-		title: "Books that feel like a warm hug",
-		slug: "books-that-feel-like-a-warm-hug",
+		title: "Ice Breaker by Hannah Grace",
+		slug: "ice-breaker-by-hannah-grace",
 		excerpt:
 		"A handful of gentle stories for rainy afternoons, soft blankets, and quieter days.",
 		body: `Some books arrive at exactly the right time. These are the stories I return to when the weather turns gray or life feels louder than usual. A comforting book does not have to be uneventful. The best ones still contain heartbreak, uncertainty, and change.`,
-		featuredImageUrl:
-		"https://images.search.yahoo.com/search/images;_ylt=A2RQGOS7K89qxAIAujqJzbkF;_ylu=Y29sbwN1cy13ZXN0LTIEcG9zAzEEdnRpZAMEc2VjA3Ny?fr=mcafee&p=ICE+BREAKER+BOOK+COVER&imgurl=https%3A%2F%2Fd28hgpri8am2if.cloudfront.net%2Fbook_images%2Fonix%2Fcvr9781761420917%2Ficebreaker-9781761420917_hr.jpg",
-		altText: "Illustrated cover of The Secret Garden",
+		featuredImageUrl: "https://images.thalia.media/07/-/c1a0ca7eb74b488dbaf7156a807727be/icebreaker-taschenbuch-hannah-grace.jpeg",
+		altText: "Illustrated cover of Icebreaker by Hannah Grace",
 		imageCaption: "the very best kind of afternoon",
 		category: "BOOKS" as const,
 		status: "PUBLISHED" as const,
