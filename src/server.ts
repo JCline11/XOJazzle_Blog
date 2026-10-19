@@ -21,6 +21,11 @@ app.get("/", showHomePage);
 // Post route
 app.get("/posts/:slug", showPost);
 
+// 404 route
+app.use((req, res) => {
+  res.status(404).render("404");
+});
+
 app.use((
   error: unknown,
   req: express.Request,
