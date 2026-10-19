@@ -2,8 +2,14 @@ import type { Request, Response, NextFunction } from "express";
 import {
   getHomePageData,
   getPublishedPostBySlug,
-  getSiteProfile
+  getSiteProfile,
+  getPublishedPostsByCategory
 } from "../services/content.service.ts";
+
+import { 
+	mapCategorySlug,
+  	mapCategoryToTitle
+} from "../mappers/category.mapper.ts";
 
 export async function showHomePage(
   req: Request,
@@ -41,6 +47,42 @@ export async function showPost(
     }
 
     return res.render("post", { post, profile });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function showCategoryPage(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const categoryParam = req.params.category;
+
+    if (typeof categoryParam !== "string") {
+      return res.status(404).render("404");
+    }
+
+    const categoryValue = mapCategorySlug(categoryParam);
+
+    if (!categoryValue) {
+      return res.status(404).render("404");
+    }
+
+    const [posts, profile] = await Promise.all([
+      getPublishedPostsByCategory(categoryValue),
+      getSiteProfile()
+    ]);
+
+    return res.render("category", {
+      profile,
+      posts,
+      category: {
+        slug: categoryParam.trim().toLowerCase(),
+        title: mapCategoryToTitle(categoryValue)
+      }
+    });
   } catch (error) {
     return next(error);
   }

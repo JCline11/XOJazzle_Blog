@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+	<div class="paper-grain" aria-hidden="true"></div>
+	<%- include('../partials/header') %>
+
+	<main>
+		<section
+		class="section-wrap latest-section"
+		aria-labelledby="category-title"
+		>
+			<div class="section-heading centered-heading">
+				<p class="eyebrow">notes from the scrapbook</p>
+				<h1 id="category-title"><%= category.title %></h1>
+			</div>
+
+			<div class="posts-grid">
+				<% if (posts.length === 0) { %>
+				<div class="empty-posts">
+					<p class="hand-label">nothing here just yet ♡</p>
+					<p>No published <%= category.title %> notes yet.</p>
+				</div>
+				<% } else { %>
+				<% posts.forEach((post, index) => { %>
+					<%- include("../partials/postcard", { post, index }) %>
+				<% }) %>
+				<% } %>
+			</div>
+		</section>
+  	</main>
+
+
+	<%- include('../partials/footer') %>
+  	<script src="/js/main.js"></script>
+</body>
+</html>
