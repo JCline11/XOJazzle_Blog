@@ -21,6 +21,10 @@ app.get("/", showHomePage);
 // Post route
 app.get("/posts/:slug", showPost);
 
+app.get("/debug/500", () => {
+  throw new Error("Intentional 500 test");
+});
+
 // 404 route
 app.use((req, res) => {
   res.status(404).render("404");
@@ -34,9 +38,11 @@ app.use((
 ) => {
   console.error(error);
 
-  res.status(500).send(
-    "Something went wrong while loading the page."
-  );
+  if (res.headersSent) {
+	return next(error);
+  }
+
+  res.status(500).render("error");
 });
 
 const PORT = 3000;

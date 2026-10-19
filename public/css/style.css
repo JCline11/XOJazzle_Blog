@@ -217,6 +217,7 @@ h1 em, h2 em { color: var(--rose); font-style: italic; }
 
 /* error screen */
 .error-actions { display: flex; align-items: center; gap: 25px; margin-top: 31px; justify-content: center; }
+.error-section { display: grid; place-items: center; text-align: center;  gap: 25px; margin-top: 31px;}
 
 /* Responsive layout */
 @media (max-width: 800px) {
