@@ -15,6 +15,12 @@ app.set("views", path.join(__dirname, "views", "pages"));
 // Serve static files
 app.use(express.static(path.join(__dirname,  "..", "public")));
 
+// Middleware to set the current path for all requests
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  next();
+});
+
 // Use content router
 app.use(contentRouter);
 

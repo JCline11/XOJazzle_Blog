@@ -8,11 +8,11 @@
 		<span aria-hidden="true">☰</span>
 	</button>
     <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-		<a class="active" href="/#home">Home</a>
-		<a href="/#movies">Movies</a>
-		<a href="/#books">Books</a>
-		<a href="/#anime">Anime</a>
-		<a href="/#tv">TV Shows</a>
+		<a class="<%= currentPath === '/' ? 'active' : '' %>" href="/#home">Home</a>
+		<a class="<%= currentPath === '/categories/books' ? 'active' : '' %>" href="/categories/books">Books</a>
+		<a class="<%= currentPath === '/categories/movies' ? 'active' : '' %>" href="/categories/movies">Movies</a>
+		<a class="<%= currentPath === '/categories/anime' ? 'active' : '' %>" href="/categories/anime">Anime</a>
+		<a class="<%= currentPath === '/categories/tv' ? 'active' : '' %>" href="/categories/tv">TV Shows</a>
 		<a href="/#about">About me</a>
 	</nav>
     <p class="header-note">est. 2024 <span>♡</span></p>
