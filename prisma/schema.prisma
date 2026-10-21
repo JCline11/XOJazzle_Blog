@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  runtime  = "nodejs"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  runtime             = "nodejs"
   moduleFormat        = "esm"
   importFileExtension = "ts"
 }
@@ -26,16 +26,27 @@ model Post {
   body             String
   featuredImageUrl String?
   altText          String?
-  imageCaption 	   String?
+  imageCaption     String?
   category         PostCategory
   status           PublicationStatus @default(DRAFT)
   publishedAt      DateTime?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  pullQuote		   String?
-  rating		   Int?
-  ratingNote   	   String?
-  closingNote	   String?
+  pullQuote        String?
+  rating           Int?
+  ratingNote       String?
+  closingNote      String?
+}
+
+model CurrentlyLoving {
+  id            Int                 @id @default(autoincrement())
+  kind          CurrentlyLovingKind @unique
+  title         String
+  coverImageUrl String
+  coverAltText  String
+  note          String
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 }
 
 model SiteProfile {
@@ -60,4 +71,9 @@ enum PostCategory {
 enum PublicationStatus {
   DRAFT
   PUBLISHED
+}
+
+enum CurrentlyLovingKind {
+  READING
+  WATCHING
 }
