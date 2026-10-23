@@ -1,13 +1,15 @@
 import prisma from "../lib/prisma.ts";
 import {
   PostCategory,
-  PublicationStatus
+  PublicationStatus,
+  CurrentlyLovingKind
 } from "../generated/prisma/enums.ts";
 
 import { mapPostToViewModel } from "../mappers/post.mapper.ts";
+import { mapCurrentlyLovingToViewModel } from "../mappers/currently-loving.mapper.ts";
 
 export async function getHomePageData() {
-  const [profile, databasePosts] = await Promise.all([
+  const [profile, databasePosts, currentlyLoving] = await Promise.all([
     prisma.siteProfile.findFirst(),
 
     prisma.post.findMany({
@@ -18,7 +20,8 @@ export async function getHomePageData() {
         publishedAt: "desc"
       },
       take: 6
-    })
+    }),
+    getCurrentlyLovingData()
   ]);
 
   if (!profile) {
@@ -29,7 +32,8 @@ export async function getHomePageData() {
 
   return {
     profile,
-    latestPosts
+    latestPosts,
+	currentlyLoving
   };
 }
 
@@ -72,4 +76,27 @@ export async function getSiteProfile() {
   }
 
   return profile;
+}
+
+export async function getCurrentlyLovingData() {
+  const items = await prisma.currentlyLoving.findMany();
+
+  const readingItem = items.find(
+    item => item.kind === CurrentlyLovingKind.READING
+  );
+
+  const watchingItem = items.find(
+    item => item.kind === CurrentlyLovingKind.WATCHING
+  );
+
+  if (!readingItem || !watchingItem) {
+    throw new Error(
+      "Currently Loving content is not fully configured."
+    );
+  }
+
+  return {
+    reading: mapCurrentlyLovingToViewModel(readingItem),
+    watching: mapCurrentlyLovingToViewModel(watchingItem)
+  };
 }

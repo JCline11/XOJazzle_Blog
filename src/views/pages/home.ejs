@@ -43,10 +43,55 @@
 		<div class="divider" aria-hidden="true"><span>✦</span><span>♡</span><span>✦</span></div>
 
 		<!-- CURRENTLY LOVING: Replace title, note, image, and rating in either card. -->
-		<section id="loving" class="section-wrap loving-section" aria-labelledby="loving-title"><div class="section-heading centered-heading"><p class="eyebrow">from the current chapter</p><h2 id="loving-title">Currently <em>loving</em></h2><p class="section-subtitle">A few things keeping me company lately.</p></div><div class="loving-grid">
-		<article class="love-card love-book" id="books"><p class="love-card-label">currently reading <span>♡</span></p><div class="love-content"><div class="book-cover" role="img" aria-label="Decorative placeholder for a book cover"><span>the<br>night<br>circus</span><small>erin morgenstern</small></div><div class="love-note"><span class="hand-label">my note</span><p>“The kind of book that makes you want to live inside its pages.”</p><div class="rating" aria-label="Five out of five stars">★★★★★</div></div></div><span class="tape tape-card" aria-hidden="true"></span></article>
-		<article class="love-card love-movie" id="movies"><p class="love-card-label">currently watching <span>✦</span></p><div class="love-content"><div class="movie-poster"><img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=85" alt="Rows of seats in a movie theater"><span>midnight<br>cinema</span></div><div class="love-note"><span class="hand-label">movie night</span><p>Old movies, buttery popcorn, and no plans tomorrow.</p><div class="rating">↗ on repeat</div></div></div><span class="sticker sticker-ticket">admit one<br>♡</span></article>
-		</div></section>
+		<section id="loving" class="section-wrap loving-section" aria-labelledby="loving-title">
+			<div class="section-heading centered-heading">
+				<p class="eyebrow">from the current chapter</p>
+				<h2 id="loving-title">Currently <em>loving</em></h2>
+				<p class="section-subtitle">A few things keeping me company lately.</p>
+			</div>
+			<div class="loving-grid">
+				<article class="love-card love-book">
+					<p class="love-card-label">
+						currently reading <span>♡</span>
+					</p>
+
+					<div class="love-content">
+						<div class="book-cover">
+							<img
+								src="<%= currentlyLoving.reading.coverImageUrl %>"
+								alt="<%= currentlyLoving.reading.coverAltText %>"
+							>
+						</div>
+
+						<div class="love-note">
+							<h3><%= currentlyLoving.reading.title %></h3>
+							<span class="hand-label">my note</span>
+							<p><%= currentlyLoving.reading.note %></p>
+						</div>
+					</div>
+				</article>
+				<article class="love-card love-movie">
+					<p class="love-card-label">
+						currently watching <span>✦</span>
+					</p>
+
+					<div class="love-content">
+						<div class="movie-poster">
+							<img
+								src="<%= currentlyLoving.watching.coverImageUrl %>"
+								alt="<%= currentlyLoving.watching.coverAltText %>"
+							>
+						</div>
+
+						<div class="love-note">
+							<h3><%= currentlyLoving.watching.title %></h3>
+							<span class="hand-label">my note</span>
+							<p><%= currentlyLoving.watching.note %></p>
+						</div>
+					</div>
+				</article>
+			</div>
+		</section>
 
 		<!-- POSTS: Add another article with data-category to extend the filterable grid. -->
 		<section id="latest" class="section-wrap latest-section" aria-labelledby="latest-title">

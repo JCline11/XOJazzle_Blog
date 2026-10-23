@@ -98,6 +98,37 @@ async function main() {
 		create: samplePost,
 	});
     console.log("Seed completed successfully.");
+
+	const currentlyLovingItems = [
+		{
+			kind: "READING" as const,
+			title: "Your current book",
+			coverImageUrl: "https://about.canva.com/wp-content/uploads/sites/3/2015/01/children_bookcover.png",
+			coverAltText: "Cover of Your current book",
+			note: "A short note about what the blogger thinks."
+		},
+		{
+			kind: "WATCHING" as const,
+			title: "Your current show or movie",
+			coverImageUrl: "https://m.media-amazon.com/images/M/MV5BMDljYmI5OTktNDFmNC00NmIxLWFhODktM2YyM2JlODVmMWUwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+			coverAltText: "Poster for Your current show or movie",
+			note: "A short note about what the blogger thinks."
+		}
+	];
+	for (const item of currentlyLovingItems) {
+		await prisma.currentlyLoving.upsert({
+			where: {
+			kind: item.kind
+			},
+			update: {
+			title: item.title,
+			coverImageUrl: item.coverImageUrl,
+			coverAltText: item.coverAltText,
+			note: item.note
+			},
+			create: item
+		});
+	}
 }
 
 main()
