@@ -129,6 +129,28 @@ async function main() {
 			create: item
 		});
 	}
+
+	const anticipatedReleaseItems = [
+		{
+			kind: "BOOKS" as const,
+			text: "New worlds, beautiful covers, and the stories I will be counting down to."
+		},
+		{
+			kind: "MOVIES" as const,
+			text: "Big-screen stories and opening nights already marked on my calendar."
+		},
+		{
+			kind: "TV" as const,
+			text: "Fresh series and returning seasons that will take over my evenings."
+		}
+	];
+	for (const item of anticipatedReleaseItems) {
+		await prisma.anticipatedRelease.upsert({
+			where: { kind: item.kind },
+			update: { text: item.text },
+			create: item
+		});
+	}
 }
 
 main()

@@ -41,7 +41,7 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.08 });
 
-document.querySelectorAll(".love-card, .post-card, .diary-entry, .about-photo").forEach((element) => {
+document.querySelectorAll(".love-card, .post-card, .watchlist-card, .about-photo").forEach((element) => {
   element.classList.add("reveal");
   revealObserver.observe(element);
 });

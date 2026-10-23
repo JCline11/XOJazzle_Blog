@@ -136,29 +136,26 @@ h1 em, h2 em { color: var(--rose); font-style: italic; }
 .post-body p { margin-bottom: 18px; color: var(--muted); font-size: 13px; line-height: 1.55; }
 .read-more { color: var(--rose); font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 
-/* Anime/TV callout and diary */
-.category-note { display: grid; grid-template-columns: 1fr 260px; align-items: center; gap: 50px; padding: 94px 0 116px; border-top: 1px dashed var(--line); }
-.category-note h2 { max-width: 600px; margin-bottom: 20px; font-size: 48px; line-height: 1.04; }
-.category-note-copy > p:not(.eyebrow) { max-width: 570px; color: var(--muted); }
-.category-doodle { display: grid; place-items: center; width: 225px; height: 225px; margin-left: auto; border: 1px dashed var(--rose); border-radius: 50%; color: var(--rose); text-align: center; transform: rotate(8deg); }
+/* Watch list */
+.watchlist-section { position: relative; overflow: hidden; background: #f4eae3; }
+.watchlist-section::before { content: ""; position: absolute; inset: 0; opacity: .25; background: repeating-linear-gradient(0deg, transparent 0 39px, rgba(183, 110, 121, .12) 40px); }
+.watchlist-inner { position: relative; display: grid; grid-template-columns: 330px 1fr; gap: 80px; padding: 105px 0 116px; }
+.stamp { display: inline-block; margin-bottom: 32px; padding: 5px 8px; border: 1px solid var(--rose); color: var(--rose); line-height: 1.3; transform: rotate(-6deg); }
+.watchlist-heading h2 { margin-bottom: 23px; font-size: 47px; line-height: 1.03; }
+.watchlist-intro { max-width: 275px; color: var(--muted); font-size: 14px; }
+.category-doodle { display: grid; place-items: center; width: 225px; height: 225px; margin: 38px 0 0 15px; border: 1px dashed var(--rose); border-radius: 50%; color: var(--rose); text-align: center; transform: rotate(8deg); }
 .category-doodle strong { font: 45px/.8 var(--hand); }
 .category-doodle span { font-size: 30px; }
-.diary-section { position: relative; overflow: hidden; background: #f4eae3; }
-.diary-section::before { content: ""; position: absolute; inset: 0; opacity: .25; background: repeating-linear-gradient(0deg, transparent 0 39px, rgba(183, 110, 121, .12) 40px); }
-.diary-inner { position: relative; display: grid; grid-template-columns: 330px 1fr; gap: 80px; padding: 105px 0 116px; }
-.stamp { display: inline-block; margin-bottom: 32px; padding: 5px 8px; border: 1px solid var(--rose); color: var(--rose); line-height: 1.3; transform: rotate(-6deg); }
-.diary-heading h2 { margin-bottom: 23px; font-size: 47px; line-height: 1.03; }
-.diary-intro { max-width: 250px; color: var(--muted); font-size: 14px; }
-.arrow-doodle { display: block; margin-top: 36px; transform: rotate(12deg); }
-.diary-entries { display: flex; flex-direction: column; gap: 23px; }
-.diary-entry { position: relative; padding: 26px 30px; background: var(--paper); box-shadow: 0 8px 15px rgba(100, 70, 60, .07); }
+.watchlist-cards { display: flex; flex-direction: column; gap: 23px; }
+.watchlist-card { position: relative; padding: 26px 30px; background: var(--paper); box-shadow: 0 8px 15px rgba(100, 70, 60, .07); }
 .entry-one { transform: rotate(1deg); }
 .entry-two { margin-left: 25px; transform: rotate(-.7deg); }
 .entry-three { margin-right: 30px; transform: rotate(.8deg); }
 .entry-meta { display: flex; gap: 13px; margin-bottom: 8px; color: var(--rose); }
+.entry-meta strong { font-weight: 800; }
 .entry-meta span { color: var(--muted); }
-.diary-entry h3 { margin-bottom: 6px; font: 27px var(--serif); }
-.diary-entry p { max-width: 530px; margin-bottom: 10px; color: var(--muted); font-size: 13px; }
+.watchlist-card h3 { margin-bottom: 6px; font: 27px var(--serif); }
+.watchlist-card p { max-width: 530px; margin-bottom: 10px; color: var(--muted); font-size: 13px; }
 .entry-scribble { color: var(--rose); font: 18px var(--hand); }
 
 /* About/footer */
@@ -233,9 +230,8 @@ h1 em, h2 em { color: var(--rose); font-style: italic; }
   .hero-collage { width: min(100%, 500px); margin: 0 auto; }
   .loving-grid, .about-section { grid-template-columns: 1fr; gap: 35px; }
   .posts-grid { grid-template-columns: 1fr 1fr; }
-  .category-note { grid-template-columns: 1fr; gap: 30px; }
+  .watchlist-inner { grid-template-columns: 1fr; gap: 45px; }
   .category-doodle { margin-left: 0; }
-  .diary-inner { grid-template-columns: 1fr; gap: 45px; }
   .about-photo { order: 2; }
   .about-copy { order: 1; }
   .footer-top { grid-template-columns: 1fr; gap: 18px; text-align: center; }
@@ -257,7 +253,7 @@ h1 em, h2 em { color: var(--rose); font-style: italic; }
   .polaroid-small { top: 275px; left: 0; }
   .journal-scrap { right: -4px; bottom: 36px; }
   .divider::before, .divider::after { width: 65px; }
-  .section-heading h2, .diary-heading h2 { font-size: 42px; }
+  .section-heading h2, .watchlist-heading h2 { font-size: 42px; }
   .love-card { padding: 22px 20px; }
   .love-content { gap: 14px; }
   .love-note { font-size: 16px; }
