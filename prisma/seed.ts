@@ -39,6 +39,19 @@ async function main() {
 			passwordHash,
 		},
 	});
+	const heroCollageData = {
+		heroPrimaryImageUrl:
+			"https://images.unsplash.com/photo-1512820790803-83ca734da794",
+		heroPrimaryAltText: "Open book in warm light",
+		heroPrimaryCaption: "slow mornings & good stories",
+		heroSecondaryImageUrl:
+			"https://images.unsplash.com/photo-1485846234645-a62644f84728",
+		heroSecondaryAltText: "Cinematic movie theater curtain",
+		heroSecondaryCaption: "movie night",
+		heroJournalDate: "OCT 03",
+		heroJournalText: "today I am",
+		heroJournalEmphasis: "choosing joy"
+	};
 	await prisma.siteProfile.upsert({
 		where: {
 			id: 1,
@@ -56,6 +69,7 @@ async function main() {
 				tiktok: "https://www.tiktok.com/@xojazzle",
 				youtube: "https://www.youtube.com/@xojazzle",
 			},
+			...heroCollageData
 		},
 		create: {
 			id: 1,
@@ -71,6 +85,7 @@ async function main() {
 				tiktok: "https://www.tiktok.com/@xojazzle",
 				youtube: "https://www.youtube.com/@xojazzle",
 			},
+			...heroCollageData
 		},
 	});
     const samplePost = {
@@ -97,7 +112,7 @@ async function main() {
 		update: samplePost,
 		create: samplePost,
 	});
-    console.log("Seed completed successfully.");
+    
 
 	const currentlyLovingItems = [
 		{
@@ -151,6 +166,7 @@ async function main() {
 			create: item
 		});
 	}
+	console.log("Seed completed successfully.");
 }
 
 main()

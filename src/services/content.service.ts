@@ -9,6 +9,7 @@ import {
 import { mapPostToViewModel } from "../mappers/post.mapper.ts";
 import { mapCurrentlyLovingToViewModel } from "../mappers/currently-loving.mapper.ts";
 import { mapAnticipatedReleaseToViewModel } from "../mappers/anticipated-release.mapper.ts";
+import { mapHeroCollageToViewModel } from "../mappers/hero-collage.mapper.ts";
 
 export async function getHomePageData() {
   const [profile, databasePosts, currentlyLoving, anticipatedReleases] = await Promise.all([
@@ -32,12 +33,14 @@ export async function getHomePageData() {
   }
 
   const latestPosts = databasePosts.map(mapPostToViewModel);
+  const heroCollage = mapHeroCollageToViewModel(profile);
 
   return {
     profile,
     latestPosts,
 	currentlyLoving,
-	anticipatedReleases
+	anticipatedReleases,
+	heroCollage
   };
 }
 

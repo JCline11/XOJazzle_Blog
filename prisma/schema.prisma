@@ -58,15 +58,24 @@ model AnticipatedRelease {
 }
 
 model SiteProfile {
-  id              Int      @id @default(autoincrement())
-  siteName        String
-  heroText        String
-  aboutContent    String
-  profileImageUrl String?
-  contactEmail    String?
-  socialLinks     Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                    Int      @id @default(autoincrement())
+  siteName              String
+  heroText              String
+  aboutContent          String
+  profileImageUrl       String?
+  contactEmail          String?
+  socialLinks           Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  heroPrimaryImageUrl   String
+  heroPrimaryAltText    String
+  heroPrimaryCaption    String
+  heroSecondaryImageUrl String
+  heroSecondaryAltText  String
+  heroSecondaryCaption  String
+  heroJournalDate       String
+  heroJournalText       String
+  heroJournalEmphasis   String
 }
 
 enum PostCategory {
