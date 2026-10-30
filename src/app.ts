@@ -1,34 +1,73 @@
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import contentRouter from "./routes/content.routes.ts";
+import adminRouter from "./routes/admin.routes.ts";
+
+import { sessionMiddleware }
+  from "./config/session.ts";
+
+import { env } from "./config/env.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// configure ejs
+if (env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
+// Configure EJS.
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views", "pages"));
+app.set(
+  "views",
+  path.join(__dirname, "views", "pages")
+);
 
-// Serve static files
-app.use(express.static(path.join(__dirname,  "..", "public")));
+// Serve static files.
+app.use(
+  express.static(
+    path.join(__dirname, "..", "public")
+  )
+);
 
-// Middleware to set the current path for all requests
+// Parse regular HTML form submissions.
+app.use(
+  express.urlencoded({
+    extended: false
+  })
+);
+
+// Load the session before any routes use it.
+app.use(sessionMiddleware);
+
+// Expose authentication state to views.
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  res.locals.isAuthenticated =
+    Boolean(req.session.adminUserId);
+
+  next();
+});
+
+// Shared template values.
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   next();
 });
 
-// Use content router
+// Application routes.
+app.use("/admin", adminRouter);
 app.use(contentRouter);
 
-// 404 route
+// Unmatched-route handler.
 app.use((req, res) => {
-  res.status(404).render("404");
+  return res.status(404).render("404");
 });
 
+// Unexpected-error handler.
 app.use((
   error: unknown,
   req: express.Request,
@@ -38,10 +77,10 @@ app.use((
   console.error(error);
 
   if (res.headersSent) {
-	return next(error);
+    return next(error);
   }
 
-  res.status(500).render("error");
+  return res.status(500).render("error");
 });
 
 export default app;

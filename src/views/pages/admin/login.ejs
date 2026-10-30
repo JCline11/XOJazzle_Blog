@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+	<div class="paper-grain" aria-hidden="true"></div>
+
+	<header class="site-header">
+		<a class="brand" href="/" aria-label="Return to the XOJazzle homepage">
+			<span class="brand-mark">✿</span>
+			<span>XOJazzle<span class="brand-dot">.</span></span>
+		</a>
+		<p class="header-note">private studio <span>♡</span></p>
+	</header>
+
+	<main class="simple-post-page">
+		<section class="simple-post-header section-wrap" aria-labelledby="login-title">
+			<a class="article-back-link" href="/">
+				<span aria-hidden="true">←</span> back to the blog
+			</a>
+
+			<div class="simple-post-title">
+				<p class="eyebrow">administrator access</p>
+				<h1 id="login-title">Welcome <em>back</em></h1>
+				<p class="simple-post-excerpt">
+					Log in to enter the private XOJazzle studio.
+				</p>
+			</div>
+		</section>
+
+		<section class="simple-post-body" aria-label="Administrator login form">
+			<div class="simple-post-note">
+				<% if (error) { %>
+					<p id="login-error" role="alert"><%= error %></p>
+				<% } %>
+
+				<form
+					method="post"
+					action="/admin/login"
+					<% if (error) { %>aria-describedby="login-error"<% } %>
+				>
+					<p>
+						<label class="hand-label" for="email">Email</label><br>
+						<input
+							id="email"
+							name="email"
+							type="email"
+							value="<%= email %>"
+							autocomplete="username"
+							maxlength="254"
+							required
+							autofocus
+						>
+					</p>
+
+					<p>
+						<label class="hand-label" for="password">Password</label><br>
+						<input
+							id="password"
+							name="password"
+							type="password"
+							autocomplete="current-password"
+							required
+						>
+					</p>
+
+					<button class="button button-primary" type="submit">
+						log in <span aria-hidden="true">→</span>
+					</button>
+				</form>
+			</div>
+		</section>
+	</main>
+</body>
+</html>

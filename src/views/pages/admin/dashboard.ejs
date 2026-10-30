@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+	<div class="paper-grain" aria-hidden="true"></div>
+
+	<header class="site-header">
+		<a class="brand" href="/" aria-label="Return to the XOJazzle homepage">
+			<span class="brand-mark">✿</span>
+			<span>XOJazzle<span class="brand-dot">.</span></span>
+		</a>
+		<p class="header-note">private studio <span>♡</span></p>
+	</header>
+
+	<main class="simple-post-page">
+		<section class="simple-post-header section-wrap" aria-labelledby="dashboard-title">
+			<a class="article-back-link" href="/">
+				<span aria-hidden="true">←</span> view the public blog
+			</a>
+
+			<div class="simple-post-title">
+				<p class="eyebrow">administrator dashboard</p>
+				<h1 id="dashboard-title">The private <em>studio</em></h1>
+				<p class="simple-post-excerpt">
+					You are signed in. Content-management tools will be added here in the next milestone.
+				</p>
+			</div>
+		</section>
+
+		<section class="simple-post-body" aria-label="Dashboard placeholder">
+			<div class="simple-post-note">
+				<span aria-hidden="true">✦</span>
+				<p class="hand-label">authentication successful</p>
+				<h2>Welcome back.</h2>
+				<p>
+					This protected page confirms that the administrator session is working.
+				</p>
+
+				<form method="post" action="/admin/logout">
+					<button class="button button-secondary" type="submit">
+						log out <span aria-hidden="true">♡</span>
+					</button>
+				</form>
+			</div>
+		</section>
+	</main>
+</body>
+</html>
