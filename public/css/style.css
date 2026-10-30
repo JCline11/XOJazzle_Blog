@@ -96,7 +96,7 @@ h1 em, h2 em { color: var(--rose); font-style: italic; }
 .loving-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 27px; margin-top: 42px; }
 .love-card { position: relative; min-height: 285px; padding: 27px 28px 25px; overflow: hidden; box-shadow: var(--shadow); }
 .love-book { background: var(--pink-light); transform: rotate(-1deg); }
-.love-movie { background: var(--sage); transform: rotate(1.2deg); }
+.love-movie { background: var(--lavender); transform: rotate(1.2deg); }
 .love-card-label { display: flex; justify-content: space-between; color: var(--rose); font: 17px var(--hand); }
 .love-content { display: flex; align-items: center; gap: 24px; margin-top: 19px; }
 .book-cover { flex: none; width: 126px; height: 162px; padding: 0; overflow: hidden; background: linear-gradient(140deg, #836879, #b98a8d); box-shadow: 7px 8px 0 rgba(183, 110, 121, .17); }
