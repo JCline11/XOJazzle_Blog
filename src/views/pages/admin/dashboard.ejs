@@ -37,6 +37,12 @@
 				</p>
 
 				<form method="post" action="/admin/logout">
+					<input
+						type="hidden"
+						name="_csrf"
+						value="<%= csrfToken %>"
+					>
+
 					<button class="button button-secondary" type="submit">
 						log out <span aria-hidden="true">♡</span>
 					</button>

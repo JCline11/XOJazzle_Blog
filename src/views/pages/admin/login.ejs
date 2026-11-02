@@ -38,6 +38,11 @@
 					action="/admin/login"
 					<% if (error) { %>aria-describedby="login-error"<% } %>
 				>
+					<input
+						type="hidden"
+						name="_csrf"
+						value="<%= csrfToken %>"
+					>
 					<p>
 						<label class="hand-label" for="email">Email</label><br>
 						<input
