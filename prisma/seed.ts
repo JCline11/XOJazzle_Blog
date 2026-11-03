@@ -1,5 +1,4 @@
 import "dotenv/config";
-import bcrypt from "bcrypt";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 
@@ -14,12 +13,6 @@ function requiredEnv(name: string): string {
 }
 
 const databaseUrl = requiredEnv("DATABASE_URL");
-const adminEmail = requiredEnv("ADMIN_EMAIL");
-const adminPassword = requiredEnv("ADMIN_PASSWORD");
-
-if (adminPassword.length < 12) {
-  throw new Error("ADMIN_PASSWORD must contain at least 12 characters.");
-}
 
 const adapter = new PrismaPg({
   connectionString: databaseUrl,
@@ -28,17 +21,6 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-	const passwordHash = await bcrypt.hash(adminPassword, 12);
-	await prisma.adminUser.upsert({
-		where: {
-			email: adminEmail,
-		},
-		update: {},
-		create: {
-			email: adminEmail,
-			passwordHash,
-		},
-	});
 	const heroCollageData = {
 		heroPrimaryImageUrl:
 			"https://images.unsplash.com/photo-1512820790803-83ca734da794",
