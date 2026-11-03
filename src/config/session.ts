@@ -8,7 +8,7 @@ const PgSessionStore = connectPgSimple(session);
 export const sessionMiddleware = session({
   store: new PgSessionStore({
     pool: pgPool,
-    createTableIfMissing: true
+    createTableIfMissing: false
   }),
   secret: env.SESSION_SECRET,
   name: "xojazzle.sid",
