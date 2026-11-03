@@ -4,6 +4,9 @@ import type {
   NextFunction
 } from "express";
 
+import { SESSION_COOKIE_NAME }
+  from "../config/session.ts";
+
 import { loginSchema }
   from "../validation/auth.validation.ts";
 
@@ -15,8 +18,6 @@ import {
   regenerateSession,
   saveSession
 } from "../lib/session.ts";
-
-const SESSION_COOKIE_NAME = "xojazzle.sid";
 
 export function showLoginPage(
   req: Request,
@@ -71,6 +72,8 @@ export async function login(
     await regenerateSession(req);
 
     req.session.adminUserId = admin.id;
+    req.session.adminVersion =
+      admin.sessionVersion;
 
     await saveSession(req);
 

@@ -31,6 +31,7 @@ export async function authenticateAdmin(
 
   return {
     id: admin.id,
-    email: admin.email
+    email: admin.email,
+    sessionVersion: admin.updatedAt.toISOString()
   };
 }

@@ -1,9 +1,13 @@
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+
 import { env } from "./env.ts";
 import { pgPool } from "../lib/postgres.ts";
 
 const PgSessionStore = connectPgSimple(session);
+
+export const SESSION_COOKIE_NAME =
+  "xojazzle.sid";
 
 export const sessionMiddleware = session({
   store: new PgSessionStore({
@@ -11,7 +15,7 @@ export const sessionMiddleware = session({
     createTableIfMissing: false
   }),
   secret: env.SESSION_SECRET,
-  name: "xojazzle.sid",
+  name: SESSION_COOKIE_NAME,
   resave: false,
   saveUninitialized: false,
   cookie: {
