@@ -4,10 +4,13 @@
   "description": "A blog website for social media influencer XOJazzle",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
-    "test": "node --test",
+    "test": "node --test test/*.test.ts",
     "prisma:generate": "prisma generate",
     "admin:set-password": "tsx src/scripts/set-admin-password.ts"
   },

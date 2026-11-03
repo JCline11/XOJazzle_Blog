@@ -7,6 +7,11 @@ import type {
 import { SESSION_COOKIE_NAME }
   from "../config/session.ts";
 
+import {
+  getAdminSessionIdentity,
+  isAdminSessionCurrent
+} from "../auth/admin-session.ts";
+
 import prisma from "../lib/prisma.ts";
 
 import { destroySession }
@@ -17,29 +22,27 @@ export async function requireAdmin(
   res: Response,
   next: NextFunction
 ) {
-  const adminUserId = req.session.adminUserId;
-  const adminVersion = req.session.adminVersion;
+  const identity =
+    getAdminSessionIdentity(req.session);
 
-  if (
-    typeof adminUserId !== "number" ||
-    typeof adminVersion !== "string"
-  ) {
+  if (!identity) {
     return res.redirect("/admin/login");
   }
 
   try {
     const admin = await prisma.adminUser.findUnique({
       where: {
-        id: adminUserId
+        id: identity.adminUserId
       },
       select: {
         updatedAt: true
       }
     });
 
-    const sessionIsCurrent =
-      admin?.updatedAt.toISOString() ===
-        adminVersion;
+    const sessionIsCurrent = isAdminSessionCurrent(
+      identity.adminVersion,
+      admin?.updatedAt ?? null
+    );
 
     if (!sessionIsCurrent) {
       await destroySession(req);
