@@ -21,6 +21,11 @@ import {
 } from "../controllers/admin-post.controller.ts";
 
 import {
+  showHomepageForm,
+  updateHomepage
+} from "../controllers/admin-homepage.controller.ts";
+
+import {
   exposeCsrfToken,
   requireCsrf
 } from "../middleware/csrf.ts";
@@ -70,6 +75,17 @@ adminRouter.post(
   "/posts/:id/delete",
   requireCsrf,
   deletePost
+);
+
+adminRouter.get(
+  "/homepage",
+  showHomepageForm
+);
+
+adminRouter.post(
+  "/homepage",
+  requireCsrf,
+  updateHomepage
 );
 
 adminRouter.post(
