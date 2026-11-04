@@ -2,53 +2,113 @@
 <html lang="en">
 <%- include('../../partials/head') %>
 <body>
-	<div class="paper-grain" aria-hidden="true"></div>
+  <div class="paper-grain" aria-hidden="true"></div>
 
-	<header class="site-header">
-		<a class="brand" href="/" aria-label="Return to the XOJazzle homepage">
-			<span class="brand-mark">✿</span>
-			<span>XOJazzle<span class="brand-dot">.</span></span>
-		</a>
-		<p class="header-note">private studio <span>♡</span></p>
-	</header>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Return to the XOJazzle homepage">
+      <span class="brand-mark">✿</span>
+      <span>XOJazzle<span class="brand-dot">.</span></span>
+    </a>
+    <p class="header-note">private studio <span>♡</span></p>
+  </header>
 
-	<main class="simple-post-page">
-		<section class="simple-post-header section-wrap" aria-labelledby="dashboard-title">
-			<a class="article-back-link" href="/">
-				<span aria-hidden="true">←</span> view the public blog
-			</a>
+  <main class="simple-post-page">
+    <section
+      class="simple-post-header section-wrap"
+      aria-labelledby="dashboard-title"
+    >
+      <a class="article-back-link" href="/">
+        <span aria-hidden="true">←</span> view the public blog
+      </a>
 
-			<div class="simple-post-title">
-				<p class="eyebrow">administrator dashboard</p>
-				<h1 id="dashboard-title">The private <em>studio</em></h1>
-				<p class="simple-post-excerpt">
-					You are signed in. Content-management tools will be added here in the next milestone.
-				</p>
-			</div>
-		</section>
+      <div class="simple-post-title">
+        <p class="eyebrow">administrator dashboard</p>
+        <h1 id="dashboard-title">The private <em>studio</em></h1>
+        <p class="simple-post-excerpt">
+          Manage blog posts and homepage content.
+        </p>
+      </div>
+    </section>
 
-		<section class="simple-post-body" aria-label="Dashboard placeholder">
-			<div class="simple-post-note">
-				<span aria-hidden="true">✦</span>
-				<p class="hand-label">authentication successful</p>
-				<h2>Welcome back.</h2>
-				<p>
-					This protected page confirms that the administrator session is working.
-				</p>
+    <section class="simple-post-body" aria-labelledby="posts-title">
+      <% if (notice) { %>
+        <p role="status"><%= notice %></p>
+      <% } %>
 
-				<form method="post" action="/admin/logout">
-					<input
-						type="hidden"
-						name="_csrf"
-						value="<%= csrfToken %>"
-					>
+      <div class="simple-post-note">
+        <p class="hand-label">content tools</p>
+        <h2 id="posts-title">Blog posts</h2>
 
-					<button class="button button-secondary" type="submit">
-						log out <span aria-hidden="true">♡</span>
-					</button>
-				</form>
-			</div>
-		</section>
-	</main>
+        <p>
+          <a class="button button-primary" href="/admin/posts/new">
+            create a post
+          </a>
+
+          <a class="button button-secondary" href="/admin/homepage">
+            edit homepage
+          </a>
+        </p>
+
+        <% if (posts.length === 0) { %>
+          <p>No posts have been created yet.</p>
+        <% } else { %>
+          <ul>
+            <% posts.forEach((post) => { %>
+              <li>
+                <p>
+                  <strong><%= post.title %></strong><br>
+                  <span>
+                    <%= post.category %> ·
+                    <%= post.status %> ·
+                    updated <%= post.updatedAt %>
+                  </span>
+                </p>
+
+                <p>
+                  <a href="/admin/posts/<%= post.id %>/edit">
+                    edit
+                  </a>
+
+                  <% if (post.status === "published") { %>
+                    ·
+                    <a href="/posts/<%= post.slug %>">
+                      view
+                    </a>
+                  <% } %>
+                </p>
+
+                <form
+                  method="post"
+                  action="/admin/posts/<%= post.id %>/delete"
+                >
+                  <input
+                    type="hidden"
+                    name="_csrf"
+                    value="<%= csrfToken %>"
+                  >
+
+                  <button type="submit">
+                    delete
+                  </button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+        <form method="post" action="/admin/logout">
+          <input
+            type="hidden"
+            name="_csrf"
+            value="<%= csrfToken %>"
+          >
+
+          <button class="button button-secondary" type="submit">
+            log out <span aria-hidden="true">♡</span>
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

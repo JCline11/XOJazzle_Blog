@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { loginLimiter } from "../middleware/login-rate-limiting.ts";
+
+import { loginLimiter }
+  from "../middleware/login-rate-limiting.ts";
 
 import {
   login,
@@ -11,6 +13,14 @@ import { showAdminDashboard }
   from "../controllers/admin.controller.ts";
 
 import {
+  createPost,
+  deletePost,
+  showCreatePostForm,
+  showEditPostForm,
+  updatePost
+} from "../controllers/admin-post.controller.ts";
+
+import {
   exposeCsrfToken,
   requireCsrf
 } from "../middleware/csrf.ts";
@@ -20,17 +30,52 @@ import { requireAdmin }
 
 const adminRouter = Router();
 
-// Make a CSRF token available to every admin view.
 adminRouter.use(exposeCsrfToken);
 
-// Public authentication routes
 adminRouter.get("/login", showLoginPage);
-adminRouter.post("/login", requireCsrf, loginLimiter, login);
+adminRouter.post(
+  "/login",
+  requireCsrf,
+  loginLimiter,
+  login
+);
 
-// Every route declared below this line is protected.
 adminRouter.use(requireAdmin);
 
 adminRouter.get("/", showAdminDashboard);
-adminRouter.post("/logout", requireCsrf, logout);
+
+adminRouter.get(
+  "/posts/new",
+  showCreatePostForm
+);
+
+adminRouter.post(
+  "/posts",
+  requireCsrf,
+  createPost
+);
+
+adminRouter.get(
+  "/posts/:id/edit",
+  showEditPostForm
+);
+
+adminRouter.post(
+  "/posts/:id",
+  requireCsrf,
+  updatePost
+);
+
+adminRouter.post(
+  "/posts/:id/delete",
+  requireCsrf,
+  deletePost
+);
+
+adminRouter.post(
+  "/logout",
+  requireCsrf,
+  logout
+);
 
 export default adminRouter;
