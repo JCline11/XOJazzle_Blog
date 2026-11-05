@@ -42,6 +42,7 @@ model Post {
   excerpt          String
   body             String
   featuredImageUrl String?
+  featuredImageKey String?
   altText          String?
   imageCaption     String?
   category         PostCategory
@@ -60,6 +61,7 @@ model CurrentlyLoving {
   kind          CurrentlyLovingKind @unique
   title         String
   coverImageUrl String
+  coverImageKey String?
   coverAltText  String
   note          String
   createdAt     DateTime            @default(now())
@@ -80,14 +82,17 @@ model SiteProfile {
   heroText              String
   aboutContent          String
   profileImageUrl       String?
+  profileImageKey       String?
   contactEmail          String?
   socialLinks           Json?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   heroPrimaryImageUrl   String
+  heroPrimaryImageKey   String?
   heroPrimaryAltText    String
   heroPrimaryCaption    String
   heroSecondaryImageUrl String
+  heroSecondaryImageKey String?
   heroSecondaryAltText  String
   heroSecondaryCaption  String
   heroJournalDate       String
