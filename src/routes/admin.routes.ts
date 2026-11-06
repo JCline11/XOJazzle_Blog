@@ -1,7 +1,8 @@
 import { Router } from "express";
 
-import { loginLimiter }
-  from "../middleware/login-rate-limiting.ts";
+import {
+  loginLimiter
+} from "../middleware/login-rate-limiting.ts";
 
 import {
   login,
@@ -9,8 +10,9 @@ import {
   showLoginPage
 } from "../controllers/auth.controller.ts";
 
-import { showAdminDashboard }
-  from "../controllers/admin.controller.ts";
+import {
+  showAdminDashboard
+} from "../controllers/admin.controller.ts";
 
 import {
   createPost,
@@ -30,14 +32,22 @@ import {
   requireCsrf
 } from "../middleware/csrf.ts";
 
-import { requireAdmin }
-  from "../middleware/require-admin.ts";
+import {
+  requireAdmin
+} from "../middleware/require-admin.ts";
+
+import {
+  imageUploadErrorHandler,
+  parseHomepageImages,
+  parsePostImages
+} from "../middleware/image-upload.ts";
 
 const adminRouter = Router();
 
 adminRouter.use(exposeCsrfToken);
 
 adminRouter.get("/login", showLoginPage);
+
 adminRouter.post(
   "/login",
   requireCsrf,
@@ -56,8 +66,10 @@ adminRouter.get(
 
 adminRouter.post(
   "/posts",
+  parsePostImages,
   requireCsrf,
-  createPost
+  createPost,
+  imageUploadErrorHandler
 );
 
 adminRouter.get(
@@ -67,8 +79,10 @@ adminRouter.get(
 
 adminRouter.post(
   "/posts/:id",
+  parsePostImages,
   requireCsrf,
-  updatePost
+  updatePost,
+  imageUploadErrorHandler
 );
 
 adminRouter.post(
@@ -84,8 +98,10 @@ adminRouter.get(
 
 adminRouter.post(
   "/homepage",
+  parseHomepageImages,
   requireCsrf,
-  updateHomepage
+  updateHomepage,
+  imageUploadErrorHandler
 );
 
 adminRouter.post(

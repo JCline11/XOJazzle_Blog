@@ -5,21 +5,6 @@ import {
   PublicationStatus
 } from "../generated/prisma/enums.ts";
 
-function isImageLocation(value: string): boolean {
-  if (value.startsWith("/")) {
-    return true;
-  }
-
-  try {
-    const url = new URL(value);
-
-    return url.protocol === "http:" ||
-      url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
 export const adminPostSchema = z.object({
   title: z.string().trim().min(1).max(200),
 
@@ -35,15 +20,6 @@ export const adminPostSchema = z.object({
 
   excerpt: z.string().trim().min(1).max(500),
   body: z.string().trim().min(1).max(50_000),
-
-  featuredImageUrl: z
-    .string()
-    .trim()
-    .min(1)
-    .max(2_048)
-    .refine(isImageLocation, {
-      message: "Enter an HTTP image URL or a local /images path."
-    }),
 
   altText: z.string().trim().min(1).max(300),
   imageCaption: z.string().trim().max(300),
@@ -73,7 +49,6 @@ AdminPostFormValues = {
   slug: "",
   excerpt: "",
   body: "",
-  featuredImageUrl: "",
   altText: "",
   imageCaption: "",
   pullQuote: "",
@@ -106,18 +81,22 @@ export function toAdminPostFormValues(
     slug: stringValue(source, "slug"),
     excerpt: stringValue(source, "excerpt"),
     body: stringValue(source, "body"),
-    featuredImageUrl:
-      stringValue(source, "featuredImageUrl"),
     altText: stringValue(source, "altText"),
     imageCaption: stringValue(source, "imageCaption"),
     pullQuote: stringValue(source, "pullQuote"),
+
     rating:
       source.rating === null
         ? ""
         : String(source.rating ?? ""),
+
     ratingNote: stringValue(source, "ratingNote"),
     closingNote: stringValue(source, "closingNote"),
-    category: stringValue(source, "category") || "BOOKS",
-    status: stringValue(source, "status") || "DRAFT"
+
+    category:
+      stringValue(source, "category") || "BOOKS",
+
+    status:
+      stringValue(source, "status") || "DRAFT"
   };
 }

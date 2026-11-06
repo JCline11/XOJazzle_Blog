@@ -33,202 +33,151 @@
       <div class="simple-post-note">
         <% if (error) { %>
           <p id="form-error" role="alert"><%= error %></p>
+          <p>
+            Your text entries are preserved.
+            Select any replacement images again before retrying.
+          </p>
         <% } %>
+
+        <%
+          const sections = [
+            {
+              title: 'Site profile',
+              fields: [
+                { name: 'siteName', label: 'Site name', max: 100 },
+                { name: 'heroText', label: 'Hero introduction', max: 1000, rows: 4 },
+                { name: 'aboutContent', label: 'About content', max: 5000, rows: 7 },
+                { image: 'profileImage', label: 'Profile image' },
+                { name: 'contactEmail', label: 'Contact email', type: 'email', max: 254, optional: true },
+                { name: 'instagramUrl', label: 'Instagram URL', type: 'url', max: 2048 },
+                { name: 'tiktokUrl', label: 'TikTok URL', type: 'url', max: 2048 },
+                { name: 'youtubeUrl', label: 'YouTube URL', type: 'url', max: 2048 }
+              ]
+            },
+            {
+              title: 'Hero collage',
+              fields: [
+                { image: 'heroPrimaryImage', label: 'Primary image' },
+                { name: 'heroPrimaryAltText', label: 'Primary alt text', max: 300 },
+                { name: 'heroPrimaryCaption', label: 'Primary caption', max: 300 },
+                { image: 'heroSecondaryImage', label: 'Secondary image' },
+                { name: 'heroSecondaryAltText', label: 'Secondary alt text', max: 300 },
+                { name: 'heroSecondaryCaption', label: 'Secondary caption', max: 300 },
+                { name: 'heroJournalDate', label: 'Journal date', max: 100 },
+                { name: 'heroJournalText', label: 'Journal text', max: 500, rows: 3 },
+                { name: 'heroJournalEmphasis', label: 'Journal emphasis', max: 300 }
+              ]
+            },
+            {
+              title: 'Currently Reading',
+              fields: [
+                { name: 'readingTitle', label: 'Title', max: 300 },
+                { image: 'readingCoverImage', label: 'Reading cover image' },
+                { name: 'readingCoverAltText', label: 'Cover alt text', max: 300 },
+                { name: 'readingNote', label: 'Note', max: 2000, rows: 4 }
+              ]
+            },
+            {
+              title: 'Currently Watching',
+              fields: [
+                { name: 'watchingTitle', label: 'Title', max: 300 },
+                { image: 'watchingCoverImage', label: 'Watching cover image' },
+                { name: 'watchingCoverAltText', label: 'Cover alt text', max: 300 },
+                { name: 'watchingNote', label: 'Note', max: 2000, rows: 4 }
+              ]
+            },
+            {
+              title: 'Most anticipated releases',
+              fields: [
+                { name: 'anticipatedBooks', label: 'Books', max: 2000, rows: 4 },
+                { name: 'anticipatedMovies', label: 'Movies', max: 2000, rows: 4 },
+                { name: 'anticipatedTv', label: 'TV', max: 2000, rows: 4 }
+              ]
+            }
+          ];
+        %>
 
         <form
           method="post"
           action="/admin/homepage"
+          enctype="multipart/form-data"
           <% if (error) { %>aria-describedby="form-error"<% } %>
         >
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-          <fieldset>
-            <legend>Site profile</legend>
+          <p>
+            Choose files only for pictures you want to replace.
+            Leave the other image inputs empty.
+            JPEG, PNG, WebP, HEIC, and HEIF are supported.
+            Each image must be at most 5 MiB and 25 million pixels.
+          </p>
 
-            <p>
-              <label for="siteName">Site name</label><br>
-              <input id="siteName" name="siteName"
-                value="<%= homepage.siteName %>" required>
-            </p>
+          <% sections.forEach((section) => { %>
+            <fieldset>
+              <legend><%= section.title %></legend>
 
-            <p>
-              <label for="heroText">Hero introduction</label><br>
-              <textarea id="heroText" name="heroText"
-                rows="4" required><%= homepage.heroText %></textarea>
-            </p>
+              <% section.fields.forEach((field) => { %>
+                <% if (field.image) { %>
+                  <% const current = currentImages[field.image]; %>
 
-            <p>
-              <label for="aboutContent">About content</label><br>
-              <textarea id="aboutContent" name="aboutContent"
-                rows="7" required><%= homepage.aboutContent %></textarea>
-            </p>
+                  <% if (current.url) { %>
+                    <figure>
+                      <img
+                        src="<%= current.url %>"
+                        alt="Current <%= field.label.toLowerCase() %>"
+                        width="200"
+                        loading="lazy"
+                      >
+                      <figcaption>Current <%= field.label.toLowerCase() %></figcaption>
+                    </figure>
+                  <% } %>
 
-            <p>
-              <label for="profileImageUrl">Profile image</label><br>
-              <input id="profileImageUrl" name="profileImageUrl"
-                value="<%= homepage.profileImageUrl %>" required>
-            </p>
+                  <p>
+                    <label for="<%= field.image %>">
+                      <%= field.label %>
+                    </label><br>
 
-            <p>
-              <label for="contactEmail">Contact email</label><br>
-              <input id="contactEmail" name="contactEmail" type="email"
-                value="<%= homepage.contactEmail %>">
-            </p>
+                    <input
+                      id="<%= field.image %>"
+                      name="<%= field.image %>"
+                      type="file"
+                      accept="<%= imageAccept %>"
+                      aria-describedby="<%= field.image %>-help"
+                    >
+                  </p>
 
-            <p>
-              <label for="instagramUrl">Instagram URL</label><br>
-              <input id="instagramUrl" name="instagramUrl" type="url"
-                value="<%= homepage.instagramUrl %>" required>
-            </p>
+                  <p id="<%= field.image %>-help">
+                    Leave empty to keep the current image.
+                  </p>
+                <% } else { %>
+                  <p>
+                    <label for="<%= field.name %>">
+                      <%= field.label %>
+                    </label><br>
 
-            <p>
-              <label for="tiktokUrl">TikTok URL</label><br>
-              <input id="tiktokUrl" name="tiktokUrl" type="url"
-                value="<%= homepage.tiktokUrl %>" required>
-            </p>
-
-            <p>
-              <label for="youtubeUrl">YouTube URL</label><br>
-              <input id="youtubeUrl" name="youtubeUrl" type="url"
-                value="<%= homepage.youtubeUrl %>" required>
-            </p>
-          </fieldset>
-
-          <fieldset>
-            <legend>Hero collage</legend>
-
-            <p>
-              <label for="heroPrimaryImageUrl">Primary image</label><br>
-              <input id="heroPrimaryImageUrl" name="heroPrimaryImageUrl"
-                value="<%= homepage.heroPrimaryImageUrl %>" required>
-            </p>
-
-            <p>
-              <label for="heroPrimaryAltText">Primary alt text</label><br>
-              <input id="heroPrimaryAltText" name="heroPrimaryAltText"
-                value="<%= homepage.heroPrimaryAltText %>" required>
-            </p>
-
-            <p>
-              <label for="heroPrimaryCaption">Primary caption</label><br>
-              <input id="heroPrimaryCaption" name="heroPrimaryCaption"
-                value="<%= homepage.heroPrimaryCaption %>" required>
-            </p>
-
-            <p>
-              <label for="heroSecondaryImageUrl">Secondary image</label><br>
-              <input id="heroSecondaryImageUrl" name="heroSecondaryImageUrl"
-                value="<%= homepage.heroSecondaryImageUrl %>" required>
-            </p>
-
-            <p>
-              <label for="heroSecondaryAltText">Secondary alt text</label><br>
-              <input id="heroSecondaryAltText" name="heroSecondaryAltText"
-                value="<%= homepage.heroSecondaryAltText %>" required>
-            </p>
-
-            <p>
-              <label for="heroSecondaryCaption">Secondary caption</label><br>
-              <input id="heroSecondaryCaption" name="heroSecondaryCaption"
-                value="<%= homepage.heroSecondaryCaption %>" required>
-            </p>
-
-            <p>
-              <label for="heroJournalDate">Journal date</label><br>
-              <input id="heroJournalDate" name="heroJournalDate"
-                value="<%= homepage.heroJournalDate %>" required>
-            </p>
-
-            <p>
-              <label for="heroJournalText">Journal text</label><br>
-              <textarea id="heroJournalText" name="heroJournalText"
-                rows="3" required><%= homepage.heroJournalText %></textarea>
-            </p>
-
-            <p>
-              <label for="heroJournalEmphasis">Journal emphasis</label><br>
-              <input id="heroJournalEmphasis" name="heroJournalEmphasis"
-                value="<%= homepage.heroJournalEmphasis %>" required>
-            </p>
-          </fieldset>
-
-          <fieldset>
-            <legend>Currently Reading</legend>
-
-            <p>
-              <label for="readingTitle">Title</label><br>
-              <input id="readingTitle" name="readingTitle"
-                value="<%= homepage.readingTitle %>" required>
-            </p>
-
-            <p>
-              <label for="readingCoverImageUrl">Cover image</label><br>
-              <input id="readingCoverImageUrl" name="readingCoverImageUrl"
-                value="<%= homepage.readingCoverImageUrl %>" required>
-            </p>
-
-            <p>
-              <label for="readingCoverAltText">Cover alt text</label><br>
-              <input id="readingCoverAltText" name="readingCoverAltText"
-                value="<%= homepage.readingCoverAltText %>" required>
-            </p>
-
-            <p>
-              <label for="readingNote">Note</label><br>
-              <textarea id="readingNote" name="readingNote"
-                rows="4" required><%= homepage.readingNote %></textarea>
-            </p>
-          </fieldset>
-
-          <fieldset>
-            <legend>Currently Watching</legend>
-
-            <p>
-              <label for="watchingTitle">Title</label><br>
-              <input id="watchingTitle" name="watchingTitle"
-                value="<%= homepage.watchingTitle %>" required>
-            </p>
-
-            <p>
-              <label for="watchingCoverImageUrl">Cover image</label><br>
-              <input id="watchingCoverImageUrl" name="watchingCoverImageUrl"
-                value="<%= homepage.watchingCoverImageUrl %>" required>
-            </p>
-
-            <p>
-              <label for="watchingCoverAltText">Cover alt text</label><br>
-              <input id="watchingCoverAltText" name="watchingCoverAltText"
-                value="<%= homepage.watchingCoverAltText %>" required>
-            </p>
-
-            <p>
-              <label for="watchingNote">Note</label><br>
-              <textarea id="watchingNote" name="watchingNote"
-                rows="4" required><%= homepage.watchingNote %></textarea>
-            </p>
-          </fieldset>
-
-          <fieldset>
-            <legend>Most anticipated releases</legend>
-
-            <p>
-              <label for="anticipatedBooks">Books</label><br>
-              <textarea id="anticipatedBooks" name="anticipatedBooks"
-                rows="4" required><%= homepage.anticipatedBooks %></textarea>
-            </p>
-
-            <p>
-              <label for="anticipatedMovies">Movies</label><br>
-              <textarea id="anticipatedMovies" name="anticipatedMovies"
-                rows="4" required><%= homepage.anticipatedMovies %></textarea>
-            </p>
-
-            <p>
-              <label for="anticipatedTv">TV</label><br>
-              <textarea id="anticipatedTv" name="anticipatedTv"
-                rows="4" required><%= homepage.anticipatedTv %></textarea>
-            </p>
-          </fieldset>
+                    <% if (field.rows) { %>
+                      <textarea
+                        id="<%= field.name %>"
+                        name="<%= field.name %>"
+                        rows="<%= field.rows %>"
+                        maxlength="<%= field.max %>"
+                        required
+                      ><%= homepage[field.name] %></textarea>
+                    <% } else { %>
+                      <input
+                        id="<%= field.name %>"
+                        name="<%= field.name %>"
+                        type="<%= field.type || 'text' %>"
+                        value="<%= homepage[field.name] %>"
+                        maxlength="<%= field.max %>"
+                        <% if (!field.optional) { %>required<% } %>
+                      >
+                    <% } %>
+                  </p>
+                <% } %>
+              <% }) %>
+            </fieldset>
+          <% }) %>
 
           <button class="button button-primary" type="submit">
             save homepage

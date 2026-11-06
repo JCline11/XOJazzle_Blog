@@ -31,44 +31,41 @@
       <div class="simple-post-note">
         <% if (error) { %>
           <p id="form-error" role="alert"><%= error %></p>
+          <p>
+            Your text entries are preserved.
+            If you selected an image, choose it again before retrying.
+          </p>
         <% } %>
 
         <form
           method="post"
           action="<%= action %>"
+          enctype="multipart/form-data"
           <% if (error) { %>aria-describedby="form-error"<% } %>
         >
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
           <p>
             <label for="title">Title</label><br>
-            <input
-              id="title"
-              name="title"
+            <input id="title" name="title"
               value="<%= post.title %>"
-              maxlength="200"
-              required
-            >
+              maxlength="200" required>
           </p>
 
           <p>
             <label for="slug">Slug</label><br>
-            <input
-              id="slug"
-              name="slug"
+            <input id="slug" name="slug"
               value="<%= post.slug %>"
               maxlength="200"
               pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              required
-            >
+              required>
           </p>
 
           <p>
             <label for="category">Category</label><br>
             <select id="category" name="category">
               <% ['BOOKS', 'MOVIES', 'ANIME', 'TV'].forEach((value) => { %>
-                <option
-                  value="<%= value %>"
+                <option value="<%= value %>"
                   <%= post.category === value ? 'selected' : '' %>
                 ><%= value.toLowerCase() %></option>
               <% }) %>
@@ -78,12 +75,10 @@
           <p>
             <label for="status">Publication status</label><br>
             <select id="status" name="status">
-              <option
-                value="DRAFT"
+              <option value="DRAFT"
                 <%= post.status === 'DRAFT' ? 'selected' : '' %>
               >draft</option>
-              <option
-                value="PUBLISHED"
+              <option value="PUBLISHED"
                 <%= post.status === 'PUBLISHED' ? 'selected' : '' %>
               >published</option>
             </select>
@@ -91,65 +86,70 @@
 
           <p>
             <label for="excerpt">Excerpt</label><br>
-            <textarea
-              id="excerpt"
-              name="excerpt"
-              maxlength="500"
-              rows="4"
-              required
-            ><%= post.excerpt %></textarea>
+            <textarea id="excerpt" name="excerpt"
+              maxlength="500" rows="4"
+              required><%= post.excerpt %></textarea>
           </p>
 
           <p>
             <label for="body">Body</label><br>
-            <textarea
-              id="body"
-              name="body"
-              maxlength="50000"
-              rows="18"
-              required
-            ><%= post.body %></textarea>
+            <textarea id="body" name="body"
+              maxlength="50000" rows="18"
+              required><%= post.body %></textarea>
           </p>
 
+          <% if (currentImageUrl) { %>
+            <figure>
+              <img
+                src="<%= currentImageUrl %>"
+                alt="<%= post.altText || 'Current featured image' %>"
+                width="240"
+              >
+              <figcaption>Current featured image</figcaption>
+            </figure>
+          <% } %>
+
           <p>
-            <label for="featuredImageUrl">Featured image</label><br>
+            <label for="featuredImage">
+              <%= currentImageUrl ? 'Replace featured image' : 'Featured image' %>
+            </label><br>
+
             <input
-              id="featuredImageUrl"
-              name="featuredImageUrl"
-              value="<%= post.featuredImageUrl %>"
-              maxlength="2048"
-              required
+              id="featuredImage"
+              name="featuredImage"
+              type="file"
+              accept="<%= imageAccept %>"
+              aria-describedby="featured-image-help"
+              <% if (!currentImageUrl) { %>required<% } %>
             >
+          </p>
+
+          <p id="featured-image-help">
+            JPEG, PNG, WebP, HEIC, or HEIF.
+            Maximum 5 MiB and 25 million pixels.
+            <% if (currentImageUrl) { %>
+              Leave empty to keep the current image.
+            <% } %>
           </p>
 
           <p>
             <label for="altText">Image alternative text</label><br>
-            <input
-              id="altText"
-              name="altText"
+            <input id="altText" name="altText"
               value="<%= post.altText %>"
-              maxlength="300"
-              required
-            >
+              maxlength="300" required>
           </p>
 
           <p>
             <label for="imageCaption">Image caption</label><br>
-            <input
-              id="imageCaption"
-              name="imageCaption"
+            <input id="imageCaption" name="imageCaption"
               value="<%= post.imageCaption %>"
-              maxlength="300"
-            >
+              maxlength="300">
           </p>
 
           <p>
             <label for="pullQuote">Pull quote</label><br>
-            <textarea
-              id="pullQuote"
-              name="pullQuote"
-              maxlength="1000"
-              rows="3"
+            <textarea id="pullQuote" name="pullQuote"
+              maxlength="1000" rows="3"
             ><%= post.pullQuote %></textarea>
           </p>
 
@@ -158,8 +158,7 @@
             <select id="rating" name="rating">
               <option value="">no rating</option>
               <% ['1', '2', '3', '4', '5'].forEach((value) => { %>
-                <option
-                  value="<%= value %>"
+                <option value="<%= value %>"
                   <%= post.rating === value ? 'selected' : '' %>
                 ><%= value %></option>
               <% }) %>
@@ -168,21 +167,15 @@
 
           <p>
             <label for="ratingNote">Rating note</label><br>
-            <textarea
-              id="ratingNote"
-              name="ratingNote"
-              maxlength="1000"
-              rows="3"
+            <textarea id="ratingNote" name="ratingNote"
+              maxlength="1000" rows="3"
             ><%= post.ratingNote %></textarea>
           </p>
 
           <p>
             <label for="closingNote">Closing note</label><br>
-            <textarea
-              id="closingNote"
-              name="closingNote"
-              maxlength="2000"
-              rows="4"
+            <textarea id="closingNote" name="closingNote"
+              maxlength="2000" rows="4"
             ><%= post.closingNote %></textarea>
           </p>
 
