@@ -75,16 +75,18 @@ function postFormValues() {
   };
 }
 
-function deletionValues() {
+function dashboardValues(title = "Example post") {
   return {
-    post: {
+    notice: null,
+    posts: [{
       id: 1,
-      title: "Example post",
-      category: "BOOKS",
-      status: "DRAFT"
-    },
-
-    postVersion: "2026-01-01T00:00:00.000Z"
+      title,
+      slug: "example-post",
+      category: "books",
+      status: "draft",
+      updatedAt: "Nov 6, 2026",
+      postVersion: "2026-01-01T00:00:00.000Z"
+    }]
   };
 }
 
@@ -178,10 +180,10 @@ describe("administrator form rendering", () => {
     );
   });
 
-  it("renders protected deletion confirmation", async () => {
+  it("renders protected deletion confirmation in a dashboard modal", async () => {
     const html = await render(
-      "post-delete",
-      deletionValues()
+      "dashboard",
+      dashboardValues()
     );
 
     const confirmation = namedInput(
@@ -194,9 +196,14 @@ describe("administrator form rendering", () => {
       /<form\b[^>]*method="post"[^>]*action="\/admin\/posts\/1\/delete"/
     );
 
-    assert.match(confirmation, /type="checkbox"/);
+    assert.match(html, /<dialog\b[^>]*id="delete-post-1"/);
+    assert.match(html, /aria-labelledby="delete-post-title-1"/);
+    assert.match(html, /aria-describedby="delete-post-description-1"/);
+    assert.match(html, /Are you sure you want to delete:/);
+    assert.match(confirmation, /type="hidden"/);
     assert.match(confirmation, /value="yes"/);
-    assert.match(confirmation, /\brequired\b/);
+    assert.match(html, /type="button"[^>]*data-cancel-delete[^>]*autofocus/);
+    assert.match(html, /src="\/js\/admin-delete\.js" defer/);
 
     assert.match(
       namedInput(html, "_csrf"),
@@ -214,17 +221,11 @@ describe("administrator form rendering", () => {
     );
   });
 
-  it("escapes post titles on deletion confirmation", async () => {
-    const values = deletionValues();
-
-    const html = await render("post-delete", {
-      ...values,
-
-      post: {
-        ...values.post,
-        title: "<script>alert(1)</script>"
-      }
-    });
+  it("escapes post titles in deletion modals", async () => {
+    const html = await render(
+      "dashboard",
+      dashboardValues('<script>alert(1)</script>')
+    );
 
     assert.doesNotMatch(
       html,
@@ -237,30 +238,38 @@ describe("administrator form rendering", () => {
     );
   });
 
-  it("links to confirmation instead of posting deletion directly", async () => {
-    const html = await render("dashboard", {
-      notice: null,
-
-      posts: [
-        {
-          id: 1,
-          title: "Example post",
-          slug: "example-post",
-          category: "books",
-          status: "draft",
-          updatedAt: "Nov 6, 2026"
-        }
-      ]
-    });
+  it("opens confirmation with a non-submitting button instead of a page link", async () => {
+    const html = await render("dashboard", dashboardValues());
 
     assert.match(
       html,
-      /href="\/admin\/posts\/1\/delete"/
+      /<button\b[^>]*type="button"[^>]*data-delete-dialog="delete-post-1"/
     );
 
     assert.doesNotMatch(
       html,
-      /<form\b[^>]*action="\/admin\/posts\/1\/delete"/
+      /href="\/admin\/posts\/1\/delete"/
     );
+  });
+
+  it("keeps each post's title, action, and version in its own dialog", async () => {
+    const values = dashboardValues();
+    values.posts.push({
+      ...values.posts[0],
+      id: 2,
+      title: "Another post",
+      postVersion: "2026-02-01T00:00:00.000Z"
+    });
+
+    const html = await render("dashboard", values);
+    const dialogs = Array.from(html.matchAll(/<dialog\b[\s\S]*?<\/dialog>/g), match => match[0]);
+
+    assert.equal(dialogs.length, 2);
+    assert.match(dialogs[0], /Example post/);
+    assert.match(dialogs[0], /action="\/admin\/posts\/1\/delete"/);
+    assert.match(dialogs[0], /value="2026-01-01T00:00:00\.000Z"/);
+    assert.match(dialogs[1], /Another post/);
+    assert.match(dialogs[1], /action="\/admin\/posts\/2\/delete"/);
+    assert.match(dialogs[1], /value="2026-02-01T00:00:00\.000Z"/);
   });
 });

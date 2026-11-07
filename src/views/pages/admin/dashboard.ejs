@@ -77,14 +77,49 @@
                   <% } %>
 
                   ·
-                  <a href="/admin/posts/<%= post.id %>/delete">
-                    delete…
-                  </a>
+                  <button
+                    type="button"
+                    class="admin-delete-trigger"
+                    data-delete-dialog="delete-post-<%= post.id %>"
+                    aria-haspopup="dialog"
+                    aria-controls="delete-post-<%= post.id %>"
+                    hidden
+                  >delete</button>
                 </p>
+
+                <dialog
+                  id="delete-post-<%= post.id %>"
+                  class="delete-dialog"
+                  aria-labelledby="delete-post-title-<%= post.id %>"
+                  aria-describedby="delete-post-description-<%= post.id %>"
+                >
+                  <h2 id="delete-post-title-<%= post.id %>">Delete this post?</h2>
+                  <p id="delete-post-description-<%= post.id %>">
+                    Are you sure you want to delete: <strong><%= post.title %></strong>?
+                  </p>
+                  <p>This permanently removes the post.</p>
+
+                  <form method="post" action="/admin/posts/<%= post.id %>/delete">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="postVersion" value="<%= post.postVersion %>">
+                    <input type="hidden" name="confirmDelete" value="yes">
+
+                    <div class="delete-dialog__actions">
+                      <button type="button" class="button button-secondary" data-cancel-delete autofocus>
+                        cancel
+                      </button>
+                      <button type="submit" class="button button-primary delete-dialog__confirm">
+                        delete
+                      </button>
+                    </div>
+                  </form>
+                </dialog>
               </li>
             <% }) %>
           </ul>
         <% } %>
+
+        <noscript><p>Enable JavaScript to use delete confirmation.</p></noscript>
 
         <form method="post" action="/admin/logout">
           <input
@@ -100,5 +135,6 @@
       </div>
     </section>
   </main>
+  <script src="/js/admin-delete.js" defer></script>
 </body>
 </html>

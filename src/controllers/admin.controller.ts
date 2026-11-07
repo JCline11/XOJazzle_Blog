@@ -14,23 +14,34 @@ const notices: Record<string, string> = {
   "homepage-updated": "The homepage content was updated."
 };
 
+export async function renderAdminDashboard(
+  res: Response,
+  notice: string | null = null,
+  status = 200
+) {
+  const posts = await getAdminPostSummaries();
+
+  return res.status(status).render("admin/dashboard", {
+    posts,
+    notice
+  });
+}
+
 export async function showAdminDashboard(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const posts = await getAdminPostSummaries();
-
     const noticeKey =
       typeof req.query.notice === "string"
         ? req.query.notice
         : "";
 
-    return res.render("admin/dashboard", {
-      posts,
-      notice: notices[noticeKey] ?? null
-    });
+    return await renderAdminDashboard(
+      res,
+      notices[noticeKey] ?? null
+    );
   } catch (error) {
     return next(error);
   }

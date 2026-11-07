@@ -181,7 +181,6 @@ describe("administrator route authorization", () => {
     "/admin",
     "/admin/posts/new",
     "/admin/posts/1/edit",
-    "/admin/posts/1/delete",
     "/admin/homepage"
   ]) {
     it(`protects GET ${path}`, async () => {

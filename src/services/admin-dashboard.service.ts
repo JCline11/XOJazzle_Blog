@@ -7,6 +7,7 @@ export type AdminPostSummary = {
   category: string;
   status: string;
   updatedAt: string;
+  postVersion: string;
 };
 
 function formatAdminDate(date: Date): string {
@@ -38,6 +39,7 @@ Promise<AdminPostSummary[]> {
     ...post,
     category: post.category.toLowerCase(),
     status: post.status.toLowerCase(),
-    updatedAt: formatAdminDate(post.updatedAt)
+    updatedAt: formatAdminDate(post.updatedAt),
+    postVersion: post.updatedAt.toISOString()
   }));
 }

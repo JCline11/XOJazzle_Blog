@@ -48,6 +48,8 @@ import type {
   ImageStorage
 } from "../services/image-storage.ts";
 
+import { renderAdminDashboard } from "./admin.controller.ts";
+
 let storage: ImageStorage | undefined;
 
 function getImageStorage(): ImageStorage {
@@ -148,26 +150,6 @@ function renderPostForm(
       ...options,
       imageAccept: IMAGE_INPUT_ACCEPT
     });
-}
-
-type DeletionPost = NonNullable<
-  Awaited<ReturnType<typeof getAdminPostById>>
->;
-
-function renderDeleteForm(
-  res: Response,
-  post: DeletionPost,
-  error: string | null = null,
-  status = 200
-) {
-  return res.status(status).render(
-    "admin/post-delete",
-    {
-      post,
-      postVersion: post.updatedAt.toISOString(),
-      error
-    }
-  );
 }
 
 export function showCreatePostForm(
@@ -325,30 +307,6 @@ export async function updatePost(
   return submitPost(req, res, next, id);
 }
 
-export async function showDeletePostForm(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const id = parsePostId(req.params.id);
-
-  if (!id) {
-    return res.status(404).render("404");
-  }
-
-  try {
-    const post = await getAdminPostById(id);
-
-    if (!post) {
-      return res.status(404).render("404");
-    }
-
-    return renderDeleteForm(res, post);
-  } catch (error) {
-    return next(error);
-  }
-}
-
 export async function deletePost(
   req: Request,
   res: Response,
@@ -374,9 +332,8 @@ export async function deletePost(
       req.body?.confirmDelete !== "yes" ||
       !expectedUpdatedAt
     ) {
-      return renderDeleteForm(
+      return await renderAdminDashboard(
         res,
-        post,
         "Confirm that you want to permanently delete this post.",
         400
       );
@@ -400,9 +357,8 @@ export async function deletePost(
         return res.status(404).render("404");
       }
 
-      return renderDeleteForm(
+      return await renderAdminDashboard(
         res,
-        latest,
         error.message,
         409
       );

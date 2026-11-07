@@ -18,7 +18,6 @@ import {
   createPost,
   deletePost,
   showCreatePostForm,
-  showDeletePostForm,
   showEditPostForm,
   updatePost
 } from "../controllers/admin-post.controller.ts";
@@ -84,11 +83,6 @@ adminRouter.post(
   requireCsrf,
   updatePost,
   imageUploadErrorHandler
-);
-
-adminRouter.get(
-  "/posts/:id/delete",
-  showDeletePostForm
 );
 
 adminRouter.post(
