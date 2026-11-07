@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+  <div class="paper-grain" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/admin">
+      <span class="brand-mark">✿</span>
+      <span>XOJazzle<span class="brand-dot">.</span></span>
+    </a>
+    <p class="header-note">private studio <span>♡</span></p>
+  </header>
+
+  <main class="simple-post-page">
+    <section
+      class="simple-post-header section-wrap"
+      aria-labelledby="delete-title"
+    >
+      <a class="article-back-link" href="/admin">
+        <span aria-hidden="true">←</span> dashboard
+      </a>
+
+      <div class="simple-post-title">
+        <p class="eyebrow">delete a post</p>
+        <h1 id="delete-title">Delete this post?</h1>
+      </div>
+    </section>
+
+    <section class="simple-post-body">
+      <div class="simple-post-note">
+        <% if (error) { %>
+          <p id="delete-error" role="alert"><%= error %></p>
+        <% } %>
+
+        <h2><%= post.title %></h2>
+
+        <p>
+          Category: <%= post.category.toLowerCase() %><br>
+          Status: <%= post.status.toLowerCase() %>
+        </p>
+
+        <p>
+          This permanently removes the post.
+          Its uploaded featured image will also be removed
+          if it is no longer used.
+        </p>
+
+        <form
+          method="post"
+          action="/admin/posts/<%= post.id %>/delete"
+          <% if (error) { %>aria-describedby="delete-error"<% } %>
+        >
+          <input
+            type="hidden"
+            name="_csrf"
+            value="<%= csrfToken %>"
+          >
+
+          <input
+            type="hidden"
+            name="postVersion"
+            value="<%= postVersion %>"
+          >
+
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                name="confirmDelete"
+                value="yes"
+                required
+              >
+              Yes, permanently delete this post.
+            </label>
+          </p>
+
+          <button class="button button-primary" type="submit">
+            permanently delete post
+          </button>
+
+          <a class="button button-secondary" href="/admin">
+            cancel
+          </a>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

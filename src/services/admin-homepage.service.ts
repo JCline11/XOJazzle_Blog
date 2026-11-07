@@ -51,46 +51,43 @@ export async function getAdminHomepageSnapshot():
 Promise<HomepageSnapshot> {
   return prisma.$transaction(
     async tx => {
-      const [
-        profile,
-        reading,
-        watching,
-        books,
-        movies,
-        tv
-      ] = await Promise.all([
-        tx.siteProfile.findFirst(),
+      const profile =
+        await tx.siteProfile.findFirst();
 
-        tx.currentlyLoving.findUnique({
+      const reading =
+        await tx.currentlyLoving.findUnique({
           where: {
             kind: CurrentlyLovingKind.READING
           }
-        }),
+        });
 
-        tx.currentlyLoving.findUnique({
+      const watching =
+        await tx.currentlyLoving.findUnique({
           where: {
             kind: CurrentlyLovingKind.WATCHING
           }
-        }),
+        });
 
-        tx.anticipatedRelease.findUnique({
+      const books =
+        await tx.anticipatedRelease.findUnique({
           where: {
             kind: AnticipatedReleaseKind.BOOKS
           }
-        }),
+        });
 
-        tx.anticipatedRelease.findUnique({
+      const movies =
+        await tx.anticipatedRelease.findUnique({
           where: {
             kind: AnticipatedReleaseKind.MOVIES
           }
-        }),
+        });
 
-        tx.anticipatedRelease.findUnique({
+      const tv =
+        await tx.anticipatedRelease.findUnique({
           where: {
             kind: AnticipatedReleaseKind.TV
           }
-        })
-      ]);
+        });
 
       if (
         !profile ||
@@ -121,23 +118,13 @@ Promise<HomepageSnapshot> {
           youtubeUrl:
             socialLink(profile.socialLinks, "youtube"),
 
-          heroPrimaryAltText:
-            profile.heroPrimaryAltText,
-
-          heroPrimaryCaption:
-            profile.heroPrimaryCaption,
-
-          heroSecondaryAltText:
-            profile.heroSecondaryAltText,
-
-          heroSecondaryCaption:
-            profile.heroSecondaryCaption,
-
+          heroPrimaryAltText: profile.heroPrimaryAltText,
+          heroPrimaryCaption: profile.heroPrimaryCaption,
+          heroSecondaryAltText: profile.heroSecondaryAltText,
+          heroSecondaryCaption: profile.heroSecondaryCaption,
           heroJournalDate: profile.heroJournalDate,
           heroJournalText: profile.heroJournalText,
-
-          heroJournalEmphasis:
-            profile.heroJournalEmphasis,
+          heroJournalEmphasis: profile.heroJournalEmphasis,
 
           readingTitle: reading.title,
           readingCoverAltText: reading.coverAltText,
@@ -212,15 +199,9 @@ export async function updateAdminHomepageContent(
       prisma.siteProfile.update({
         where: {
           ...expected.versions.profile,
-
-          profileImageKey:
-            expected.images.profileImage.key,
-
-          heroPrimaryImageKey:
-            expected.images.heroPrimaryImage.key,
-
-          heroSecondaryImageKey:
-            expected.images.heroSecondaryImage.key
+          profileImageKey: expected.images.profileImage.key,
+          heroPrimaryImageKey: expected.images.heroPrimaryImage.key,
+          heroSecondaryImageKey: expected.images.heroSecondaryImage.key
         },
 
         data: {
@@ -237,13 +218,8 @@ export async function updateAdminHomepageContent(
 
           heroPrimaryAltText: input.heroPrimaryAltText,
           heroPrimaryCaption: input.heroPrimaryCaption,
-
-          heroSecondaryAltText:
-            input.heroSecondaryAltText,
-
-          heroSecondaryCaption:
-            input.heroSecondaryCaption,
-
+          heroSecondaryAltText: input.heroSecondaryAltText,
+          heroSecondaryCaption: input.heroSecondaryCaption,
           heroJournalDate: input.heroJournalDate,
           heroJournalText: input.heroJournalText,
           heroJournalEmphasis: input.heroJournalEmphasis,
@@ -274,9 +250,7 @@ export async function updateAdminHomepageContent(
       prisma.currentlyLoving.update({
         where: {
           ...expected.versions.reading,
-
-          coverImageKey:
-            expected.images.readingCoverImage.key
+          coverImageKey: expected.images.readingCoverImage.key
         },
 
         data: {
@@ -296,9 +270,7 @@ export async function updateAdminHomepageContent(
       prisma.currentlyLoving.update({
         where: {
           ...expected.versions.watching,
-
-          coverImageKey:
-            expected.images.watchingCoverImage.key
+          coverImageKey: expected.images.watchingCoverImage.key
         },
 
         data: {

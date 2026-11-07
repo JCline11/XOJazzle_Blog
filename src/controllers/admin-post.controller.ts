@@ -21,6 +21,7 @@ import {
   createAdminPost,
   deleteAdminPost,
   getAdminPostById,
+  isImageKeyReferenced,
   updateAdminPost
 } from "../services/admin-post.service.ts";
 
@@ -29,6 +30,11 @@ import {
   PostEditConflictError,
   PostSlugConflictError
 } from "../services/post-upload.ts";
+
+import {
+  createPostDeletionWorkflow,
+  PostDeletionConflictError
+} from "../services/post-deletion.ts";
 
 import {
   processUploadedImage
@@ -44,24 +50,34 @@ import type {
 
 let storage: ImageStorage | undefined;
 
+function getImageStorage(): ImageStorage {
+  storage ??= createConfiguredR2ImageStorage();
+  return storage;
+}
+
+function reportCleanupFailure(key: string): void {
+  console.error(
+    "R2 image cleanup failed; retry required.",
+    { key }
+  );
+}
+
 const savePostWithImage =
   createPostUploadWorkflow({
     getPost: getAdminPostById,
     createPost: createAdminPost,
     updatePost: updateAdminPost,
     processImage: processUploadedImage,
+    getStorage: getImageStorage,
+    reportCleanupFailure
+  });
 
-    getStorage() {
-      storage ??= createConfiguredR2ImageStorage();
-      return storage;
-    },
-
-    reportCleanupFailure(key) {
-      console.error(
-        "R2 image cleanup failed; retry required.",
-        { key }
-      );
-    }
+const removePostWithImage =
+  createPostDeletionWorkflow({
+    deletePost: deleteAdminPost,
+    isImageReferenced: isImageKeyReferenced,
+    getStorage: getImageStorage,
+    reportCleanupFailure
   });
 
 function parsePostId(
@@ -76,6 +92,25 @@ function parsePostId(
   return Number.isSafeInteger(id) && id > 0
     ? id
     : null;
+}
+
+function parsePostVersion(
+  value: unknown
+): Date | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (
+    !Number.isFinite(date.getTime()) ||
+    date.toISOString() !== value
+  ) {
+    return null;
+  }
+
+  return date;
 }
 
 function featuredImage(
@@ -113,6 +148,26 @@ function renderPostForm(
       ...options,
       imageAccept: IMAGE_INPUT_ACCEPT
     });
+}
+
+type DeletionPost = NonNullable<
+  Awaited<ReturnType<typeof getAdminPostById>>
+>;
+
+function renderDeleteForm(
+  res: Response,
+  post: DeletionPost,
+  error: string | null = null,
+  status = 200
+) {
+  return res.status(status).render(
+    "admin/post-delete",
+    {
+      post,
+      postVersion: post.updatedAt.toISOString(),
+      error
+    }
+  );
 }
 
 export function showCreatePostForm(
@@ -179,21 +234,9 @@ async function submitPost(
     post: formValues,
     currentImageUrl,
     error,
-
-    heading:
-      id === null
-        ? "Create a post"
-        : "Edit a post",
-
-    action:
-      id === null
-        ? "/admin/posts"
-        : `/admin/posts/${id}`,
-
-    submitLabel:
-      id === null
-        ? "create post"
-        : "save changes"
+    heading: id === null ? "Create a post" : "Edit a post",
+    action: id === null ? "/admin/posts" : `/admin/posts/${id}`,
+    submitLabel: id === null ? "create post" : "save changes"
   });
 
   try {
@@ -245,7 +288,6 @@ async function submitPost(
       }
 
       currentImageUrl = latest.featuredImageUrl;
-
       return renderFailure(409, error.message);
     }
 
@@ -254,10 +296,7 @@ async function submitPost(
     }
 
     if (error instanceof ImageUploadError) {
-      return renderFailure(
-        error.status,
-        error.message
-      );
+      return renderFailure(error.status, error.message);
     }
 
     return next(error);
@@ -286,6 +325,30 @@ export async function updatePost(
   return submitPost(req, res, next, id);
 }
 
+export async function showDeletePostForm(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const id = parsePostId(req.params.id);
+
+  if (!id) {
+    return res.status(404).render("404");
+  }
+
+  try {
+    const post = await getAdminPostById(id);
+
+    if (!post) {
+      return res.status(404).render("404");
+    }
+
+    return renderDeleteForm(res, post);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export async function deletePost(
   req: Request,
   res: Response,
@@ -298,7 +361,31 @@ export async function deletePost(
   }
 
   try {
-    const deleted = await deleteAdminPost(id);
+    const post = await getAdminPostById(id);
+
+    if (!post) {
+      return res.status(404).render("404");
+    }
+
+    const expectedUpdatedAt =
+      parsePostVersion(req.body?.postVersion);
+
+    if (
+      req.body?.confirmDelete !== "yes" ||
+      !expectedUpdatedAt
+    ) {
+      return renderDeleteForm(
+        res,
+        post,
+        "Confirm that you want to permanently delete this post.",
+        400
+      );
+    }
+
+    const deleted = await removePostWithImage(
+      id,
+      expectedUpdatedAt
+    );
 
     if (!deleted) {
       return res.status(404).render("404");
@@ -306,6 +393,21 @@ export async function deletePost(
 
     return res.redirect("/admin?notice=deleted");
   } catch (error) {
+    if (error instanceof PostDeletionConflictError) {
+      const latest = await getAdminPostById(id);
+
+      if (!latest) {
+        return res.status(404).render("404");
+      }
+
+      return renderDeleteForm(
+        res,
+        latest,
+        error.message,
+        409
+      );
+    }
+
     return next(error);
   }
 }

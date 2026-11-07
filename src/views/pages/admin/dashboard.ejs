@@ -75,22 +75,12 @@
                       view
                     </a>
                   <% } %>
+
+                  ·
+                  <a href="/admin/posts/<%= post.id %>/delete">
+                    delete…
+                  </a>
                 </p>
-
-                <form
-                  method="post"
-                  action="/admin/posts/<%= post.id %>/delete"
-                >
-                  <input
-                    type="hidden"
-                    name="_csrf"
-                    value="<%= csrfToken %>"
-                  >
-
-                  <button type="submit">
-                    delete
-                  </button>
-                </form>
               </li>
             <% }) %>
           </ul>

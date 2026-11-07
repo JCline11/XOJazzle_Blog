@@ -22,6 +22,11 @@ import {
   type PostImageState
 } from "./post-upload.ts";
 
+import {
+  PostDeletionConflictError,
+  type DeletedPostImage
+} from "./post-deletion.ts";
+
 function optionalText(value: string): string | null {
   return value === "" ? null : value;
 }
@@ -131,11 +136,71 @@ export async function updateAdminPost(
 }
 
 export async function deleteAdminPost(
-  id: number
-): Promise<boolean> {
-  const result = await prisma.post.deleteMany({
-    where: { id }
-  });
+  id: number,
+  expectedUpdatedAt: Date
+): Promise<DeletedPostImage | null> {
+  try {
+    return await prisma.post.delete({
+      where: {
+        id,
+        updatedAt: expectedUpdatedAt
+      },
 
-  return result.count === 1;
+      select: {
+        featuredImageKey: true
+      }
+    });
+  } catch (error) {
+    if (
+      error instanceof
+        Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      const existing = await prisma.post.findUnique({
+        where: { id },
+        select: { id: true }
+      });
+
+      if (!existing) {
+        return null;
+      }
+
+      throw new PostDeletionConflictError();
+    }
+
+    throw error;
+  }
+}
+
+export async function isImageKeyReferenced(
+  key: string
+): Promise<boolean> {
+  const references = await Promise.all([
+    prisma.post.findFirst({
+      where: {
+        featuredImageKey: key
+      },
+      select: { id: true }
+    }),
+
+    prisma.currentlyLoving.findFirst({
+      where: {
+        coverImageKey: key
+      },
+      select: { id: true }
+    }),
+
+    prisma.siteProfile.findFirst({
+      where: {
+        OR: [
+          { profileImageKey: key },
+          { heroPrimaryImageKey: key },
+          { heroSecondaryImageKey: key }
+        ]
+      },
+      select: { id: true }
+    })
+  ]);
+
+  return references.some(reference => reference !== null);
 }
