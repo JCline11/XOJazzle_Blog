@@ -64,11 +64,21 @@ export type HomepageSnapshot = {
 export class HomepageEditConflictError extends Error {
   constructor() {
     super(
-      "The homepage changed while you were saving. Review the current content and try again."
+      "The homepage has changed since you opened it. Reload the editor to review the latest content before saving."
     );
 
     this.name = "HomepageEditConflictError";
   }
+}
+
+export function homepageVersion(snapshot: HomepageSnapshot): string {
+  const rows: HomepageRow[] = [
+    "profile", "reading", "watching", "books", "movies", "tv"
+  ];
+  return rows.map(row => {
+    const version = snapshot.versions[row];
+    return `${version.id}:${version.updatedAt.toISOString()}`;
+  }).join("|");
 }
 
 export type HomepageUploadDependencies = {

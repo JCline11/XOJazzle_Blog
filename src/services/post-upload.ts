@@ -23,7 +23,7 @@ export class PostSlugConflictError extends Error {
 export class PostEditConflictError extends Error {
   constructor() {
     super(
-      "This post changed while you were saving. Review the current post and try again."
+      "This post has changed since you opened it. Reload the editor to review the latest content before saving."
     );
 
     this.name = "PostEditConflictError";
@@ -81,7 +81,8 @@ export function createPostUploadWorkflow(
   return async function savePost(
     id: number | null,
     input: AdminPostInput,
-    file?: UploadedImageInput
+    file?: UploadedImageInput,
+    expectedVersion?: string
   ): Promise<boolean> {
     const existing =
       id === null
@@ -90,6 +91,10 @@ export function createPostUploadWorkflow(
 
     if (id !== null && !existing) {
       return false;
+    }
+
+    if (existing && existing.updatedAt.toISOString() !== expectedVersion) {
+      throw new PostEditConflictError();
     }
 
     if (!file && !existing?.featuredImageUrl) {

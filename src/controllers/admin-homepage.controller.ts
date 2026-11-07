@@ -24,6 +24,7 @@ import {
   createHomepageUploadWorkflow,
   HOMEPAGE_IMAGE_FIELDS,
   HomepageEditConflictError,
+  homepageVersion,
   type HomepageImageFiles,
   type HomepageImages,
   type HomepageSnapshot
@@ -88,6 +89,7 @@ function renderHomepageForm(
   res: Response,
   homepage: AdminHomepageInput,
   currentImages: HomepageImages,
+  version: string,
   error: string | null,
   status = 200
 ) {
@@ -96,6 +98,7 @@ function renderHomepageForm(
     {
       homepage,
       currentImages,
+      homepageVersion: version,
       imageAccept: IMAGE_INPUT_ACCEPT,
       error
     }
@@ -115,6 +118,7 @@ export async function showHomepageForm(
       res,
       snapshot.values,
       snapshot.images,
+      homepageVersion(snapshot),
       null
     );
   } catch (error) {
@@ -131,9 +135,15 @@ export async function updateHomepage(
     toAdminHomepageFormValues(req.body);
 
   let snapshot: HomepageSnapshot | undefined;
+  const version = typeof req.body?.homepageVersion === "string"
+    ? req.body.homepageVersion : "";
 
   try {
     snapshot = await getAdminHomepageSnapshot();
+
+    if (version !== homepageVersion(snapshot)) {
+      throw new HomepageEditConflictError();
+    }
 
     const result =
       adminHomepageSchema.safeParse(req.body);
@@ -143,6 +153,7 @@ export async function updateHomepage(
         res,
         formValues,
         snapshot.images,
+        version,
         result.error.issues[0]?.message ??
           "Review the form and try again.",
         400
@@ -167,6 +178,7 @@ export async function updateHomepage(
         res,
         formValues,
         latest.images,
+        version,
         error.message,
         409
       );
@@ -180,6 +192,7 @@ export async function updateHomepage(
         res,
         formValues,
         snapshot.images,
+        version,
         error.message,
         error.status
       );

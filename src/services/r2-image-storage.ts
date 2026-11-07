@@ -23,14 +23,17 @@ ImageStorage {
     },
     {
       putObject(input) {
+        // Bound the whole operation, including SDK retries and backoff.
         return client.send(
-          new PutObjectCommand(input)
+          new PutObjectCommand(input),
+          { abortSignal: AbortSignal.timeout(30_000) }
         );
       },
 
       deleteObject(input) {
         return client.send(
-          new DeleteObjectCommand(input)
+          new DeleteObjectCommand(input),
+          { abortSignal: AbortSignal.timeout(30_000) }
         );
       }
     }

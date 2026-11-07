@@ -31,6 +31,7 @@
       <div class="simple-post-note">
         <% if (error) { %>
           <p id="form-error" role="alert"><%= error %></p>
+          <p><a href="<%= action === '/admin/posts' ? '/admin/posts/new' : action + '/edit' %>">Reload the editor with the latest saved content</a> (discards unsaved entries).</p>
           <p>
             Your text entries are preserved.
             If you selected an image, choose it again before retrying.
@@ -44,6 +45,7 @@
           <% if (error) { %>aria-describedby="form-error"<% } %>
         >
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="postVersion" value="<%= postVersion %>">
 
           <p>
             <label for="title">Title</label><br>

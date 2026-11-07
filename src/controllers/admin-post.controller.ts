@@ -138,6 +138,7 @@ function renderPostForm(
     status?: number;
     post: AdminPostFormValues;
     currentImageUrl: string | null;
+    postVersion?: string;
     error: string | null;
     heading: string;
     action: string;
@@ -148,6 +149,7 @@ function renderPostForm(
     .status(options.status ?? 200)
     .render("admin/post-form", {
       ...options,
+      postVersion: options.postVersion ?? "",
       imageAccept: IMAGE_INPUT_ACCEPT
     });
 }
@@ -187,6 +189,7 @@ export async function showEditPostForm(
     return renderPostForm(res, {
       post: toAdminPostFormValues(post),
       currentImageUrl: post.featuredImageUrl,
+      postVersion: post.updatedAt.toISOString(),
       error: null,
       heading: "Edit a post",
       action: `/admin/posts/${id}`,
@@ -207,6 +210,8 @@ async function submitPost(
     toAdminPostFormValues(req.body);
 
   let currentImageUrl: string | null = null;
+  const postVersion = typeof req.body?.postVersion === "string"
+    ? req.body.postVersion : "";
 
   const renderFailure = (
     status: number,
@@ -215,6 +220,7 @@ async function submitPost(
     status,
     post: formValues,
     currentImageUrl,
+    postVersion,
     error,
     heading: id === null ? "Create a post" : "Edit a post",
     action: id === null ? "/admin/posts" : `/admin/posts/${id}`,
@@ -230,6 +236,13 @@ async function submitPost(
       }
 
       currentImageUrl = existing.featuredImageUrl;
+
+      if (!parsePostVersion(postVersion)) {
+        return renderFailure(400, "Reload the editor before saving this post.");
+      }
+      if (postVersion !== existing.updatedAt.toISOString()) {
+        throw new PostEditConflictError();
+      }
     }
 
     const result =
@@ -246,7 +259,8 @@ async function submitPost(
     const saved = await savePostWithImage(
       id,
       result.data,
-      featuredImage(req)
+      featuredImage(req),
+      postVersion
     );
 
     if (!saved) {

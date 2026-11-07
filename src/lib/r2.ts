@@ -7,6 +7,13 @@ export function createR2Client(
 ): S3Client {
   return new S3Client({
     region: "auto",
+    maxAttempts: 2,
+    requestHandler: {
+      connectionTimeout: 5_000,
+      requestTimeout: 20_000,
+      // This SDK otherwise only warns when the request deadline expires.
+      throwOnRequestTimeout: true
+    },
 
     endpoint:
       `https://${config.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,

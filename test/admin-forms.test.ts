@@ -39,6 +39,8 @@ async function render(
 
   return ejs.renderFile(filename, {
     csrfToken: "test-csrf-token",
+    postVersion: "2026-01-01T00:00:00.000Z",
+    homepageVersion: "test-homepage-version",
     imageAccept: IMAGE_INPUT_ACCEPT,
     error: null,
     ...values

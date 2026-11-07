@@ -115,6 +115,13 @@ function harness(
 }
 
 describe("post image workflow", () => {
+  it("rejects stale or missing versions before processing an image", async () => {
+    for (const version of [undefined, "2025-01-01T00:00:00.000Z"]) {
+      const { save, events } = harness();
+      await assert.rejects(save(1, input, file, version), PostEditConflictError);
+      assert.deepEqual(events, []);
+    }
+  });
   it("requires an image for a new post", async () => {
     const { save, events } = harness();
 
@@ -145,7 +152,7 @@ describe("post image workflow", () => {
   it("keeps the existing image without storage calls", async () => {
     const { save, events } = harness();
 
-    assert.equal(await save(1, input), true);
+    assert.equal(await save(1, input, undefined, existing.updatedAt.toISOString()), true);
 
     assert.deepEqual(events, ["update-text"]);
   });
@@ -158,7 +165,7 @@ describe("post image workflow", () => {
     });
 
     assert.equal(
-      await save(1, input, file),
+      await save(1, input, file, existing.updatedAt.toISOString()),
       false
     );
 
@@ -230,7 +237,7 @@ describe("post image workflow", () => {
   it("deletes the old image after replacement succeeds", async () => {
     const { save, events } = harness();
 
-    await save(1, input, file);
+    await save(1, input, file, existing.updatedAt.toISOString());
 
     assert.deepEqual(events, [
       "process",
@@ -255,7 +262,7 @@ describe("post image workflow", () => {
       }
     });
 
-    await save(1, input, file);
+    await save(1, input, file, existing.updatedAt.toISOString());
 
     assert.equal(
       events.some(event => event.startsWith("delete:")),
@@ -273,7 +280,7 @@ describe("post image workflow", () => {
     });
 
     await assert.rejects(
-      save(1, input, file),
+      save(1, input, file, existing.updatedAt.toISOString()),
       error => error === failure
     );
 
@@ -301,7 +308,7 @@ describe("post image workflow", () => {
     });
 
     assert.equal(
-      await save(1, input, file),
+      await save(1, input, file, existing.updatedAt.toISOString()),
       true
     );
 
