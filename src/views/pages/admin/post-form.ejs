@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
-<%- include('../../partials/head') %>
-<body>
+<%- include('../../partials/head', { adminStyles: true }) %>
+<body class="admin-page admin-editor">
   <div class="paper-grain" aria-hidden="true"></div>
 
   <header class="site-header">
@@ -9,10 +9,14 @@
       <span class="brand-mark">✿</span>
       <span>XOJazzle<span class="brand-dot">.</span></span>
     </a>
+    <nav class="admin-nav" aria-label="Studio navigation">
+      <a href="/admin">dashboard</a>
+      <a href="/">view blog <span aria-hidden="true">↗</span></a>
+    </nav>
     <p class="header-note">private studio <span>♡</span></p>
   </header>
 
-  <main class="simple-post-page">
+  <main class="simple-post-page admin-main">
     <section
       class="simple-post-header section-wrap"
       aria-labelledby="post-form-title"
@@ -28,7 +32,7 @@
     </section>
 
     <section class="simple-post-body">
-      <div class="simple-post-note">
+      <div class="simple-post-note admin-paper">
         <% if (error) { %>
           <p id="form-error" role="alert"><%= error %></p>
           <p><a href="<%= action === '/admin/posts' ? '/admin/posts/new' : action + '/edit' %>">Reload the editor with the latest saved content</a> (discards unsaved entries).</p>
@@ -181,9 +185,12 @@
             ><%= post.closingNote %></textarea>
           </p>
 
-          <button class="button button-primary" type="submit">
-            <%= submitLabel %>
-          </button>
+          <div class="admin-actions">
+            <a class="button button-secondary" href="/admin">back to dashboard</a>
+            <button class="button button-primary" type="submit">
+              <%= submitLabel %> <span aria-hidden="true">♡</span>
+            </button>
+          </div>
         </form>
       </div>
     </section>

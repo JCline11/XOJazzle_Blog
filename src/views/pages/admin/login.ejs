@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
-<%- include('../../partials/head') %>
-<body>
+<%- include('../../partials/head', { adminStyles: true }) %>
+<body class="admin-page admin-login">
 	<div class="paper-grain" aria-hidden="true"></div>
 
 	<header class="site-header">
@@ -12,7 +12,7 @@
 		<p class="header-note">private studio <span>♡</span></p>
 	</header>
 
-	<main class="simple-post-page">
+	<main class="simple-post-page admin-main">
 		<section class="simple-post-header section-wrap" aria-labelledby="login-title">
 			<a class="article-back-link" href="/">
 				<span aria-hidden="true">←</span> back to the blog
@@ -28,7 +28,7 @@
 		</section>
 
 		<section class="simple-post-body" aria-label="Administrator login form">
-			<div class="simple-post-note">
+			<div class="simple-post-note admin-paper">
 				<% if (error) { %>
 					<p id="login-error" role="alert"><%= error %></p>
 				<% } %>

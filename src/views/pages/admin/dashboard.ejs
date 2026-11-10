@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
-<%- include('../../partials/head') %>
-<body>
+<%- include('../../partials/head', { adminStyles: true }) %>
+<body class="admin-page admin-dashboard">
   <div class="paper-grain" aria-hidden="true"></div>
 
   <header class="site-header">
@@ -9,10 +9,14 @@
       <span class="brand-mark">✿</span>
       <span>XOJazzle<span class="brand-dot">.</span></span>
     </a>
+    <nav class="admin-nav" aria-label="Studio navigation">
+      <a href="/admin">dashboard</a>
+      <a href="/">view blog <span aria-hidden="true">↗</span></a>
+    </nav>
     <p class="header-note">private studio <span>♡</span></p>
   </header>
 
-  <main class="simple-post-page">
+  <main class="simple-post-page admin-main">
     <section
       class="simple-post-header section-wrap"
       aria-labelledby="dashboard-title"
@@ -32,14 +36,14 @@
 
     <section class="simple-post-body" aria-labelledby="posts-title">
       <% if (notice) { %>
-        <p role="status"><%= notice %></p>
+        <p class="admin-notice" role="status"><%= notice %></p>
       <% } %>
 
-      <div class="simple-post-note">
+      <div class="simple-post-note admin-paper">
         <p class="hand-label">content tools</p>
         <h2 id="posts-title">Blog posts</h2>
 
-        <p>
+        <p class="admin-toolbar">
           <a class="button button-primary" href="/admin/posts/new">
             create a post
           </a>
@@ -52,19 +56,18 @@
         <% if (posts.length === 0) { %>
           <p>No posts have been created yet.</p>
         <% } else { %>
-          <ul>
+          <ul class="admin-post-list">
             <% posts.forEach((post) => { %>
-              <li>
-                <p>
+              <li class="admin-post-row">
+                <p class="admin-post-details">
                   <strong><%= post.title %></strong><br>
                   <span>
-                    <%= post.category %> ·
-                    <%= post.status %> ·
-                    updated <%= post.updatedAt %>
+                    <span class="admin-status admin-status--<%= post.status %>"><%= post.status %></span>
+                    <%= post.category %> · updated <%= post.updatedAt %>
                   </span>
                 </p>
 
-                <p>
+                <p class="admin-row-actions">
                   <a href="/admin/posts/<%= post.id %>/edit">
                     edit
                   </a>
@@ -121,7 +124,7 @@
 
         <noscript><p>Enable JavaScript to use delete confirmation.</p></noscript>
 
-        <form method="post" action="/admin/logout">
+        <form class="admin-logout" method="post" action="/admin/logout">
           <input
             type="hidden"
             name="_csrf"
