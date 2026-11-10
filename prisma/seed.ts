@@ -15,144 +15,147 @@ function requiredEnv(name: string): string {
 const databaseUrl = requiredEnv("DATABASE_URL");
 
 const adapter = new PrismaPg({
-  connectionString: databaseUrl,
+  connectionString: databaseUrl
 });
 
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-	const heroCollageData = {
-		heroPrimaryImageUrl:
-			"https://images.unsplash.com/photo-1512820790803-83ca734da794",
-		heroPrimaryAltText: "Open book in warm light",
-		heroPrimaryCaption: "slow mornings & good stories",
-		heroSecondaryImageUrl:
-			"https://images.unsplash.com/photo-1485846234645-a62644f84728",
-		heroSecondaryAltText: "Cinematic movie theater curtain",
-		heroSecondaryCaption: "movie night",
-		heroJournalDate: "OCT 03",
-		heroJournalText: "today I am",
-		heroJournalEmphasis: "choosing joy"
-	};
-	await prisma.siteProfile.upsert({
-		where: {
-			id: 1,
-		},
-		update: {
-			siteName: "XOJazzle",
-			heroText:
-				"A scrapbook of the stories I love, the shows I binge, and all the little thoughts I want to share along the way.",
-			aboutContent:
-				"I’m a content creator, enthusiastic reader, movie-night professional, and collector of tiny beautiful moments.",
-			profileImageUrl: "/images/profile/xojazzle_profile.jpg",
-			contactEmail: "hello@xojazzle.com",
-			socialLinks: {
-				instagram: "https://www.instagram.com/xojazzle/",
-				tiktok: "https://www.tiktok.com/@xojazzle",
-				youtube: "https://www.youtube.com/@xojazzle",
-			},
-			...heroCollageData
-		},
-		create: {
-			id: 1,
-			siteName: "XOJazzle",
-			heroText:
-				"A scrapbook of the stories I love, the shows I binge, and all the little thoughts I want to share along the way.",
-			aboutContent:
-				"I’m a content creator, enthusiastic reader, movie-night professional, and collector of tiny beautiful moments.",
-			profileImageUrl: "/images/profile/xojazzle_profile.jpg",
-			contactEmail: "hello@xojazzle.com",
-			socialLinks: {
-				instagram: "https://www.instagram.com/xojazzle/",
-				tiktok: "https://www.tiktok.com/@xojazzle",
-				youtube: "https://www.youtube.com/@xojazzle",
-			},
-			...heroCollageData
-		},
-	});
-    const samplePost = {
-		title: "Ice Breaker by Hannah Grace",
-		slug: "ice-breaker-by-hannah-grace",
-		excerpt:
-		"A handful of gentle stories for rainy afternoons, soft blankets, and quieter days.",
-		body: `Some books arrive at exactly the right time. These are the stories I return to when the weather turns gray or life feels louder than usual. A comforting book does not have to be uneventful. The best ones still contain heartbreak, uncertainty, and change.`,
-		featuredImageUrl: "https://images.thalia.media/07/-/c1a0ca7eb74b488dbaf7156a807727be/icebreaker-taschenbuch-hannah-grace.jpeg",
-		altText: "Illustrated cover of Icebreaker by Hannah Grace",
-		imageCaption: "the very best kind of afternoon",
-		category: "BOOKS" as const,
-		status: "PUBLISHED" as const,
-		publishedAt: new Date("2026-10-12T12:00:00.000Z"),
-		pullQuote: "Maybe comfort is not the absence of difficult things. Maybe it is knowing we do not have to meet them alone.",
-		closingNote: "Tell me about the book you reach for when you need a softer day. I am always making room for one more recommendation.",
-		rating: 5,
-		ratingNote: "For maximum coziness, read with a blanket and nowhere else to be.",
-	};
-    await prisma.post.upsert({
-		where: {
-			slug: samplePost.slug,
-		},
-		update: samplePost,
-		create: samplePost,
-	});
-    
+  const heroCollageData = {
+    heroPrimaryImageUrl:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794",
+    heroPrimaryAltText: "Open book in warm light",
+    heroPrimaryCaption: "slow mornings & good stories",
+    heroSecondaryImageUrl:
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728",
+    heroSecondaryAltText: "Cinematic movie theater curtain",
+    heroSecondaryCaption: "movie night",
+    heroJournalDate: "OCT 03",
+    heroJournalText: "today I am",
+    heroJournalEmphasis: "choosing joy"
+  };
 
-	const currentlyLovingItems = [
-		{
-			kind: "READING" as const,
-			title: "Your current book",
-			coverImageUrl: "https://about.canva.com/wp-content/uploads/sites/3/2015/01/children_bookcover.png",
-			coverAltText: "Cover of Your current book",
-			note: "A short note about what the blogger thinks."
-		},
-		{
-			kind: "WATCHING" as const,
-			title: "Your current show or movie",
-			coverImageUrl: "https://m.media-amazon.com/images/M/MV5BMDljYmI5OTktNDFmNC00NmIxLWFhODktM2YyM2JlODVmMWUwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-			coverAltText: "Poster for Your current show or movie",
-			note: "A short note about what the blogger thinks."
-		}
-	];
-	for (const item of currentlyLovingItems) {
-		await prisma.currentlyLoving.upsert({
-			where: {
-			kind: item.kind
-			},
-			update: {
-			title: item.title,
-			coverImageUrl: item.coverImageUrl,
-			coverAltText: item.coverAltText,
-			note: item.note
-			},
-			create: item
-		});
-	}
+  await prisma.siteProfile.upsert({
+    where: {
+      id: 1
+    },
 
-	const anticipatedReleaseItems = [
-		{
-			kind: "BOOKS" as const,
-			text: "New worlds, beautiful covers, and the stories I will be counting down to."
-		},
-		{
-			kind: "MOVIES" as const,
-			text: "Big-screen stories and opening nights already marked on my calendar."
-		},
-		{
-			kind: "TV" as const,
-			text: "Fresh series and returning seasons that will take over my evenings."
-		}
-	];
-	for (const item of anticipatedReleaseItems) {
-		await prisma.anticipatedRelease.upsert({
-			where: { kind: item.kind },
-			update: { text: item.text },
-			create: item
-		});
-	}
-	console.log("Seed completed successfully.");
+    // Existing editorial content belongs to the blogger.
+    update: {},
+
+    create: {
+      id: 1,
+      siteName: "XOJazzle",
+      heroText:
+        "A scrapbook of the stories I love, the shows I binge, and all the little thoughts I want to share along the way.",
+      aboutContent:
+        "I’m a content creator, enthusiastic reader, movie-night professional, and collector of tiny beautiful moments.",
+      profileImageUrl: "/images/profile/xojazzle_profile.jpg",
+      contactEmail: "hello@xojazzle.com",
+      socialLinks: {
+        instagram: "https://www.instagram.com/xojazzle/",
+        tiktok: "https://www.tiktok.com/@xojazzle",
+        youtube: "https://www.youtube.com/@xojazzle"
+      },
+      ...heroCollageData
+    }
+  });
+
+  const samplePost = {
+    title: "Ice Breaker by Hannah Grace",
+    slug: "ice-breaker-by-hannah-grace",
+    excerpt:
+      "A handful of gentle stories for rainy afternoons, soft blankets, and quieter days.",
+    body:
+      "Some books arrive at exactly the right time. These are the stories I return to when the weather turns gray or life feels louder than usual. A comforting book does not have to be uneventful. The best ones still contain heartbreak, uncertainty, and change.",
+    featuredImageUrl:
+      "https://images.thalia.media/07/-/c1a0ca7eb74b488dbaf7156a807727be/icebreaker-taschenbuch-hannah-grace.jpeg",
+    altText: "Illustrated cover of Icebreaker by Hannah Grace",
+    imageCaption: "the very best kind of afternoon",
+    category: "BOOKS" as const,
+    status: "PUBLISHED" as const,
+    publishedAt: new Date("2026-10-12T12:00:00.000Z"),
+    pullQuote:
+      "Maybe comfort is not the absence of difficult things. Maybe it is knowing we do not have to meet them alone.",
+    closingNote:
+      "Tell me about the book you reach for when you need a softer day. I am always making room for one more recommendation.",
+    rating: 5,
+    ratingNote:
+      "For maximum coziness, read with a blanket and nowhere else to be."
+  };
+
+  await prisma.post.upsert({
+    where: {
+      slug: samplePost.slug
+    },
+    update: {},
+    create: samplePost
+  });
+
+  const currentlyLovingItems = [
+    {
+      kind: "READING" as const,
+      title: "Your current book",
+      coverImageUrl:
+        "https://about.canva.com/wp-content/uploads/sites/3/2015/01/children_bookcover.png",
+      coverAltText: "Cover of Your current book",
+      note: "A short note about what the blogger thinks."
+    },
+    {
+      kind: "WATCHING" as const,
+      title: "Your current show or movie",
+      coverImageUrl:
+        "https://m.media-amazon.com/images/M/MV5BMDljYmI5OTktNDFmNC00NmIxLWFhODktM2YyM2JlODVmMWUwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+      coverAltText: "Poster for Your current show or movie",
+      note: "A short note about what the blogger thinks."
+    }
+  ];
+
+  for (const item of currentlyLovingItems) {
+    await prisma.currentlyLoving.upsert({
+      where: {
+        kind: item.kind
+      },
+      update: {},
+      create: item
+    });
+  }
+
+  const anticipatedReleaseItems = [
+    {
+      kind: "BOOKS" as const,
+      text:
+        "New worlds, beautiful covers, and the stories I will be counting down to."
+    },
+    {
+      kind: "MOVIES" as const,
+      text:
+        "Big-screen stories and opening nights already marked on my calendar."
+    },
+    {
+      kind: "TV" as const,
+      text:
+        "Fresh series and returning seasons that will take over my evenings."
+    }
+  ];
+
+  for (const item of anticipatedReleaseItems) {
+    await prisma.anticipatedRelease.upsert({
+      where: {
+        kind: item.kind
+      },
+      update: {},
+      create: item
+    });
+  }
+
+  console.log(
+    "Seed completed. Missing starter content was created; existing content was preserved."
+  );
 }
 
 main()
-  .catch((error) => {
+  .catch(error => {
     console.error("Seed failed:", error);
     process.exitCode = 1;
   })
