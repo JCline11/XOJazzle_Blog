@@ -13,7 +13,8 @@
     "test": "node --test test/*.test.ts",
     "test:integration": "node --test test/integration/*.test.ts",
     "test:seed": "node --test test/seed/*.test.ts",
-    "test:all": "npm test && npm run test:integration && npm run test:seed",
+    "test:slugs": "node --test test/slugs/*.test.ts",
+    "test:all": "npm test && npm run test:integration && npm run test:seed && npm run test:slugs",
     "prisma:generate": "prisma generate",
     "admin:set-password": "tsx src/scripts/set-admin-password.ts"
   },

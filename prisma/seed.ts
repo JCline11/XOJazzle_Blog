@@ -2,6 +2,10 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 
+import {
+  reservePostSlug
+} from "../src/services/post-slugs.ts";
+
 function requiredEnv(name: string): string {
   const value = process.env[name];
 
@@ -39,10 +43,7 @@ async function main() {
     where: {
       id: 1
     },
-
-    // Existing editorial content belongs to the blogger.
     update: {},
-
     create: {
       id: 1,
       siteName: "XOJazzle",
@@ -84,12 +85,26 @@ async function main() {
       "For maximum coziness, read with a blanket and nowhere else to be."
   };
 
-  await prisma.post.upsert({
-    where: {
-      slug: samplePost.slug
-    },
-    update: {},
-    create: samplePost
+  await prisma.$transaction(async tx => {
+    const registration = await tx.postSlug.findUnique({
+      where: {
+        slug: samplePost.slug
+      }
+    });
+
+    if (registration) {
+      return;
+    }
+
+    const post = await tx.post.upsert({
+      where: {
+        slug: samplePost.slug
+      },
+      update: {},
+      create: samplePost
+    });
+
+    await reservePostSlug(tx, post.slug, post.id);
   });
 
   const currentlyLovingItems = [

@@ -1,4 +1,9 @@
-import type { Request, Response, NextFunction } from "express";
+import type {
+  Request,
+  Response,
+  NextFunction
+} from "express";
+
 import {
   getHomePageData,
   getPublishedPostBySlug,
@@ -6,22 +11,22 @@ import {
   getPublishedPostsByCategory
 } from "../services/content.service.ts";
 
-import { 
-	mapCategorySlug,
-  	mapCategoryToTitle
+import {
+  mapCategorySlug,
+  mapCategoryToTitle
 } from "../mappers/category.mapper.ts";
 
 export async function showHomePage(
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
     const homePageData = await getHomePageData();
 
-    res.render("home", homePageData);
+    return res.render("home", homePageData);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -33,20 +38,34 @@ export async function showPost(
   try {
     const { slug } = req.params;
 
-	if (typeof slug !== "string" || slug.trim() === "") {
-		return res.status(404).render("404");
-	}
+    if (
+      typeof slug !== "string" ||
+      slug.trim() === ""
+    ) {
+      return res.status(404).render("404");
+    }
 
-	const [post, profile] = await Promise.all([
-		getPublishedPostBySlug(slug),
-		getSiteProfile()
-	]);
+    const post = await getPublishedPostBySlug(slug);
 
     if (!post) {
       return res.status(404).render("404");
     }
 
-    return res.render("post", { post, profile });
+    if (post.slug !== slug) {
+      res.set("Cache-Control", "no-store");
+
+      return res.redirect(
+        301,
+        `/posts/${encodeURIComponent(post.slug)}`
+      );
+    }
+
+    const profile = await getSiteProfile();
+
+    return res.render("post", {
+      post,
+      profile
+    });
   } catch (error) {
     return next(error);
   }
@@ -64,7 +83,8 @@ export async function showCategoryPage(
       return res.status(404).render("404");
     }
 
-    const categoryValue = mapCategorySlug(categoryParam);
+    const categoryValue =
+      mapCategorySlug(categoryParam);
 
     if (!categoryValue) {
       return res.status(404).render("404");

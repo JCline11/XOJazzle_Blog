@@ -54,6 +54,15 @@ model Post {
   rating           Int?
   ratingNote       String?
   closingNote      String?
+  slugs            PostSlug[]
+}
+
+model PostSlug {
+  slug   String @id
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([postId])
 }
 
 model CurrentlyLoving {

@@ -23,9 +23,14 @@ import {
 } from "./post-upload.ts";
 
 import {
+  createPostDeletionWorkflow,
   PostDeletionConflictError,
   type DeletedPostImage
 } from "./post-deletion.ts";
+
+import {
+  reservePostSlug
+} from "./post-slugs.ts";
 
 function optionalText(value: string): string | null {
   return value === "" ? null : value;
@@ -91,7 +96,13 @@ export async function createAdminPost(
         publishedAt:
           input.status === PublicationStatus.PUBLISHED
             ? new Date()
-            : null
+            : null,
+
+        slugs: {
+          create: {
+            slug: input.slug
+          }
+        }
       }
     });
   } catch (error) {
@@ -106,28 +117,46 @@ export async function updateAdminPost(
   image?: StoredImage
 ): Promise<void> {
   try {
-    await prisma.post.update({
-      where: {
-        id,
-        updatedAt: expected.updatedAt,
-        featuredImageUrl: expected.featuredImageUrl,
-        featuredImageKey: expected.featuredImageKey
-      },
+    await prisma.$transaction(async tx => {
+      const previous = await tx.post.findUniqueOrThrow({
+        where: { id },
+        select: {
+          slug: true
+        }
+      });
 
-      data: {
-        ...postData(input),
+      await tx.post.update({
+        where: {
+          id,
+          updatedAt: expected.updatedAt,
+          featuredImageUrl: expected.featuredImageUrl,
+          featuredImageKey: expected.featuredImageKey
+        },
 
-        ...(image
-          ? {
-              featuredImageUrl: image.url,
-              featuredImageKey: image.key
-            }
-          : {}),
+        data: {
+          ...postData(input),
 
-        publishedAt:
-          input.status === PublicationStatus.PUBLISHED
-            ? expected.publishedAt ?? new Date()
-            : null
+          ...(image
+            ? {
+                featuredImageUrl: image.url,
+                featuredImageKey: image.key
+              }
+            : {}),
+
+          publishedAt:
+            input.status === PublicationStatus.PUBLISHED
+              ? expected.publishedAt ?? new Date()
+              : null
+        }
+      });
+
+      const slugs = new Set([
+        previous.slug,
+        input.slug
+      ]);
+
+      for (const slug of slugs) {
+        await reservePostSlug(tx, slug, id);
       }
     });
   } catch (error) {
