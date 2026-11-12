@@ -11,23 +11,12 @@ document.querySelectorAll(".site-nav a").forEach((link) => {
   link.addEventListener("click", () => {
     siteNav.classList.remove("open");
     menuToggle?.setAttribute("aria-expanded", "false");
-    document.querySelectorAll(".site-nav a").forEach((item) => item.classList.remove("active"));
-    link.classList.add("active");
-  });
-});
 
-// Latest-note category filters
-const filters = document.querySelectorAll(".filter");
-const posts = document.querySelectorAll(".post-card");
-
-filters.forEach((filter) => {
-  filter.addEventListener("click", () => {
-    const selectedCategory = filter.dataset.filter;
-    filters.forEach((item) => item.classList.toggle("active", item === filter));
-    posts.forEach((post) => {
-      const shouldShow = selectedCategory === "all" || post.dataset.category === selectedCategory;
-      post.style.display = shouldShow ? "" : "none";
+    document.querySelectorAll(".site-nav a").forEach((item) => {
+      item.classList.remove("active");
     });
+
+    link.classList.add("active");
   });
 });
 
@@ -43,8 +32,12 @@ if ("IntersectionObserver" in window) {
     });
   }, { threshold: 0.08 });
 
-  document.querySelectorAll(".love-card, .post-card, .watchlist-card, .about-photo").forEach((element) => {
-    element.classList.add("reveal");
-    revealObserver.observe(element);
-  });
+  document
+    .querySelectorAll(
+      ".love-card, .post-card, .watchlist-card, .about-photo"
+    )
+    .forEach((element) => {
+      element.classList.add("reveal");
+      revealObserver.observe(element);
+    });
 }
