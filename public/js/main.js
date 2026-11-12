@@ -31,25 +31,20 @@ filters.forEach((filter) => {
   });
 });
 
-// Reveal scrapbook elements as they enter the viewport.
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("is-visible");
-      revealObserver.unobserve(entry.target);
-    }
+// Reveal styles live in style.css so they follow the site's CSP.
+// Leave content visible when IntersectionObserver is unavailable.
+if ("IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll(".love-card, .post-card, .watchlist-card, .about-photo").forEach((element) => {
+    element.classList.add("reveal");
+    revealObserver.observe(element);
   });
-}, { threshold: 0.08 });
-
-document.querySelectorAll(".love-card, .post-card, .watchlist-card, .about-photo").forEach((element) => {
-  element.classList.add("reveal");
-  revealObserver.observe(element);
-});
-
-// Keeping motion here makes it easy to find and adjust later.
-const revealStyles = document.createElement("style");
-revealStyles.textContent = `
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .65s ease, transform .65s ease; }
-  .reveal.is-visible { opacity: 1; transform: none; }
-`;
-document.head.appendChild(revealStyles);
+}

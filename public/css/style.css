@@ -229,6 +229,14 @@ h1 em, h2 em { color: var(--rose); font-style: italic; }
 .delete-dialog__confirm { background: #923c50; }
 .delete-dialog button:focus-visible, .admin-delete-trigger:focus-visible { outline: 3px solid var(--rose); outline-offset: 4px; }
 
+/* Reveal animations use the permitted external stylesheet. */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
+}
+
 /* Responsive layout */
 @media (max-width: 800px) {
   .site-header { height: 72px; }
