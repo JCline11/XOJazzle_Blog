@@ -1,0 +1,15 @@
+/* Author styles must not override hidden filter controls or rows. */
+.admin-page [hidden] { display: none !important; }
+
+.admin-post-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 28px; }
+.admin-post-filters > p { margin: 0; }
+.admin-filter-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
+.admin-filter-actions p { margin: 0; color: var(--muted); font-size: 13px; }
+
+.editor-preview { width: min(720px, calc(100% - 38px)); margin: 0 auto 40px; padding: 22px 26px; border: 1px solid var(--pink); border-radius: 8px; background: var(--pink-light); }
+.editor-preview p { margin-bottom: 12px; }
+.editor-preview .hand-label { color: var(--rose); }
+
+@media (max-width: 540px) {
+  .admin-post-filters { grid-template-columns: 1fr; }
+}

@@ -5,7 +5,11 @@
   <div class="paper-grain" aria-hidden="true"></div>
 
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Return to the XOJazzle homepage">
+    <a
+      class="brand"
+      href="/"
+      aria-label="Return to the XOJazzle homepage"
+    >
       <span class="brand-mark">✿</span>
       <span>XOJazzle<span class="brand-dot">.</span></span>
     </a>
@@ -47,10 +51,51 @@
           <a class="button button-primary" href="/admin/posts/new">
             create a post
           </a>
-
           <a class="button button-secondary" href="/admin/homepage">
             edit homepage
           </a>
+        </p>
+
+        <div
+          class="admin-post-filters"
+          data-post-filters
+          role="group"
+          aria-label="Filter blog posts"
+          hidden
+        >
+          <p>
+            <label for="post-status-filter">Publication status</label>
+            <select id="post-status-filter" data-post-status>
+              <option value="all">all statuses</option>
+              <option value="draft">drafts</option>
+              <option value="published">published</option>
+            </select>
+          </p>
+
+          <p>
+            <label for="post-category-filter">Category</label>
+            <select id="post-category-filter" data-post-category>
+              <option value="all">all categories</option>
+              <option value="books">books</option>
+              <option value="movies">movies</option>
+              <option value="anime">anime</option>
+              <option value="tv">TV shows</option>
+            </select>
+          </p>
+
+          <div class="admin-filter-actions">
+            <button
+              class="button button-secondary"
+              type="button"
+              data-reset-post-filters
+            >reset filters</button>
+            <p data-post-count role="status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <p data-post-filter-empty role="status" hidden>
+          No posts match those filters.
+          Try another category or reset the filters.
         </p>
 
         <% if (posts.length === 0) { %>
@@ -58,7 +103,12 @@
         <% } else { %>
           <ul class="admin-post-list">
             <% posts.forEach((post) => { %>
-              <li class="admin-post-row">
+              <li
+                class="admin-post-row"
+                data-post-row
+                data-status="<%= post.status %>"
+                data-category="<%= post.category %>"
+              >
                 <p class="admin-post-details">
                   <strong><%= post.title %></strong><br>
                   <span>
@@ -68,15 +118,17 @@
                 </p>
 
                 <p class="admin-row-actions">
-                  <a href="/admin/posts/<%= post.id %>/edit">
-                    edit
-                  </a>
+                  <a href="/admin/posts/<%= post.id %>/edit">edit</a>
+                  ·
+                  <a
+                    href="/admin/posts/<%= post.id %>/preview"
+                    target="_blank"
+                    rel="noopener"
+                  >preview saved</a>
 
                   <% if (post.status === "published") { %>
                     ·
-                    <a href="/posts/<%= post.slug %>">
-                      view
-                    </a>
+                    <a href="/posts/<%= post.slug %>">view</a>
                   <% } %>
 
                   ·
@@ -96,24 +148,46 @@
                   aria-labelledby="delete-post-title-<%= post.id %>"
                   aria-describedby="delete-post-description-<%= post.id %>"
                 >
-                  <h2 id="delete-post-title-<%= post.id %>">Delete this post?</h2>
+                  <h2 id="delete-post-title-<%= post.id %>">
+                    Delete this post?
+                  </h2>
                   <p id="delete-post-description-<%= post.id %>">
-                    Are you sure you want to delete: <strong><%= post.title %></strong>?
+                    Are you sure you want to delete:
+                    <strong><%= post.title %></strong>?
                   </p>
                   <p>This permanently removes the post.</p>
 
-                  <form method="post" action="/admin/posts/<%= post.id %>/delete">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <input type="hidden" name="postVersion" value="<%= post.postVersion %>">
-                    <input type="hidden" name="confirmDelete" value="yes">
+                  <form
+                    method="post"
+                    action="/admin/posts/<%= post.id %>/delete"
+                  >
+                    <input
+                      type="hidden"
+                      name="_csrf"
+                      value="<%= csrfToken %>"
+                    >
+                    <input
+                      type="hidden"
+                      name="postVersion"
+                      value="<%= post.postVersion %>"
+                    >
+                    <input
+                      type="hidden"
+                      name="confirmDelete"
+                      value="yes"
+                    >
 
                     <div class="delete-dialog__actions">
-                      <button type="button" class="button button-secondary" data-cancel-delete autofocus>
-                        cancel
-                      </button>
-                      <button type="submit" class="button button-primary delete-dialog__confirm">
-                        delete
-                      </button>
+                      <button
+                        type="button"
+                        class="button button-secondary"
+                        data-cancel-delete
+                        autofocus
+                      >cancel</button>
+                      <button
+                        type="submit"
+                        class="button button-primary delete-dialog__confirm"
+                      >delete</button>
                     </div>
                   </form>
                 </dialog>
@@ -122,15 +196,20 @@
           </ul>
         <% } %>
 
-        <noscript><p>Enable JavaScript to use delete confirmation.</p></noscript>
+        <noscript>
+          <p>Enable JavaScript to use delete confirmation.</p>
+        </noscript>
 
-        <form class="admin-logout" method="post" action="/admin/logout">
+        <form
+          class="admin-logout"
+          method="post"
+          action="/admin/logout"
+        >
           <input
             type="hidden"
             name="_csrf"
             value="<%= csrfToken %>"
           >
-
           <button class="button button-secondary" type="submit">
             log out <span aria-hidden="true">♡</span>
           </button>
@@ -138,6 +217,8 @@
       </div>
     </section>
   </main>
+
   <script src="/js/admin-delete.js" defer></script>
+  <script src="/js/admin-dashboard.js" defer></script>
 </body>
 </html>

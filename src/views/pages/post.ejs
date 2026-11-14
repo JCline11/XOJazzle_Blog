@@ -6,6 +6,9 @@
   <%- include('../partials/header') %>
 
   <%
+    const previewMode =
+      typeof preview !== 'undefined' ? preview : null;
+
     const paragraphs = post.body
       .trim()
       .split(/\r\n|\r|\n/)
@@ -17,10 +20,30 @@
   %>
 
   <main class="simple-post-page">
+    <% if (previewMode) { %>
+      <aside class="editor-preview" aria-label="Saved post preview">
+        <p class="hand-label">
+          Saved <%= previewMode.status %> preview
+        </p>
+        <p>
+          This shows the last saved version.
+          Previewing does not change its publication status.
+        </p>
+        <a
+          class="text-link"
+          href="/admin/posts/<%= previewMode.id %>/edit"
+        >back to editor <span aria-hidden="true">→</span></a>
+      </aside>
+    <% } %>
+
     <article>
       <header class="simple-post-header section-wrap">
-        <a class="article-back-link" href="/#latest">
-          <span aria-hidden="true">←</span> back to latest notes
+        <a
+          class="article-back-link"
+          href="<%= previewMode ? '/admin/posts/' + previewMode.id + '/edit' : '/#latest' %>"
+        >
+          <span aria-hidden="true">←</span>
+          <%= previewMode ? 'back to editor' : 'back to latest notes' %>
         </a>
 
         <div class="simple-post-title">

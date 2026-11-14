@@ -28,6 +28,10 @@ import {
 } from "../controllers/admin-homepage.controller.ts";
 
 import {
+  showPostPreview
+} from "../controllers/admin-preview.controller.ts";
+
+import {
   exposeCsrfToken,
   requireCsrf
 } from "../middleware/csrf.ts";
@@ -59,9 +63,11 @@ adminRouter.use(requireAdmin);
 
 adminRouter.get("/", showAdminDashboard);
 
+adminRouter.get("/posts/new", showCreatePostForm);
+
 adminRouter.get(
-  "/posts/new",
-  showCreatePostForm
+  "/posts/:id/preview",
+  showPostPreview
 );
 
 adminRouter.post(
@@ -91,10 +97,7 @@ adminRouter.post(
   deletePost
 );
 
-adminRouter.get(
-  "/homepage",
-  showHomepageForm
-);
+adminRouter.get("/homepage", showHomepageForm);
 
 adminRouter.post(
   "/homepage",
@@ -104,10 +107,6 @@ adminRouter.post(
   imageUploadErrorHandler
 );
 
-adminRouter.post(
-  "/logout",
-  requireCsrf,
-  logout
-);
+adminRouter.post("/logout", requireCsrf, logout);
 
 export default adminRouter;

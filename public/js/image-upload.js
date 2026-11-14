@@ -147,7 +147,6 @@ document
         return;
       }
 
-      // Capture values before disabling controls.
       const body = new FormData(form);
 
       const controls = Array.from(
@@ -162,6 +161,7 @@ document
       saving = true;
       serverError.hidden = true;
       form.setAttribute("aria-busy", "true");
+      form.dispatchEvent(new Event("editor:saving"));
 
       controls.forEach(({ control }) => {
         control.disabled = true;
@@ -185,6 +185,7 @@ document
           destination.origin === window.location.origin &&
           destination.pathname === "/admin"
         ) {
+          form.dispatchEvent(new Event("editor:saved"));
           window.location.assign(destination.href);
           return;
         }
@@ -210,6 +211,7 @@ document
 
         saving = false;
         form.removeAttribute("aria-busy");
+        form.dispatchEvent(new Event("editor:finished"));
       }
     });
   });

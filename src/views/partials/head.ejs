@@ -7,8 +7,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+
   <% if (typeof adminStyles !== 'undefined' && adminStyles) { %>
     <link rel="stylesheet" href="/css/admin.css">
   <% } %>
+
+  <% if (
+    (typeof adminStyles !== 'undefined' && adminStyles) ||
+    (typeof preview !== 'undefined' && preview)
+  ) { %>
+    <link rel="stylesheet" href="/css/admin-workflow.css">
+  <% } %>
+
   <script src="/js/image-upload.js" defer></script>
+
+  <% if (typeof adminStyles !== 'undefined' && adminStyles) { %>
+    <script src="/js/editor-tools.js" defer></script>
+  <% } %>
 </head>
