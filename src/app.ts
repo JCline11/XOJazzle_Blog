@@ -5,9 +5,15 @@ import { fileURLToPath } from "node:url";
 
 import contentRouter from "./routes/content.routes.ts";
 import adminRouter from "./routes/admin.routes.ts";
+import searchRouter from "./routes/search.routes.ts";
 
-import { sessionMiddleware }
-  from "./config/session.ts";
+import {
+  sessionMiddleware
+} from "./config/session.ts";
+
+import {
+  privatePage
+} from "./middleware/private-page.ts";
 
 import { env } from "./config/env.ts";
 
@@ -26,28 +32,35 @@ if (env.NODE_ENV === "production") {
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
+
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
         baseUri: ["'self'"],
+
         fontSrc: [
           "'self'",
           "https://fonts.gstatic.com"
         ],
+
         formAction: ["'self'"],
         frameAncestors: ["'none'"],
+
         imgSrc: [
           "'self'",
           "data:",
           "https:"
         ],
+
         objectSrc: ["'none'"],
         scriptSrc: ["'self'"],
         scriptSrcAttr: ["'none'"],
+
         styleSrc: [
           "'self'",
           "https://fonts.googleapis.com"
         ],
+
         upgradeInsecureRequests:
           env.NODE_ENV === "production"
             ? []
@@ -59,6 +72,7 @@ app.use(
 
 // Configure EJS.
 app.set("view engine", "ejs");
+
 app.set(
   "views",
   path.join(__dirname, "views", "pages")
@@ -86,25 +100,33 @@ app.use(sessionMiddleware);
 // Expose shared values to views.
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
+
   res.locals.isAuthenticated =
     Boolean(req.session.adminUserId);
 
   return next();
 });
 
-// Application routes.
-app.use("/admin", adminRouter);
+// Apply private-page headers before admin authentication.
+app.use(
+  "/admin",
+  privatePage,
+  adminRouter
+);
+
+// Public discovery and content routes.
+app.use(searchRouter);
 app.use(contentRouter);
 
 // Unmatched-route handler.
-app.use((req, res) => {
+app.use((_req, res) => {
   return res.status(404).render("404");
 });
 
 // Unexpected-error handler.
 app.use((
   error: unknown,
-  req: express.Request,
+  _req: express.Request,
   res: express.Response,
   next: express.NextFunction
 ) => {
