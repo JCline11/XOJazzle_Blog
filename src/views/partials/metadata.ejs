@@ -1,0 +1,25 @@
+<%
+  const privateMetadataPage =
+    (typeof adminStyles !== 'undefined' && adminStyles) ||
+    (typeof preview !== 'undefined' && preview) ||
+    (typeof privatePage !== 'undefined' && privatePage);
+
+  const publicMetadata =
+    !privateMetadataPage &&
+    typeof pageMetadata !== 'undefined' &&
+    pageMetadata
+      ? pageMetadata
+      : null;
+%>
+
+<% if (publicMetadata) { %>
+  <title><%= publicMetadata.title %></title>
+  <meta
+    name="description"
+    content="<%= publicMetadata.description %>"
+  >
+<% } else { %>
+  <title>XOJazzle</title>
+  <meta name="description" content="XOJazzle website.">
+  <meta name="robots" content="noindex, nofollow">
+<% } %>

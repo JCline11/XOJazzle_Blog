@@ -4,12 +4,18 @@ import type {
   NextFunction
 } from "express";
 
+import { env } from "../config/env.ts";
+
 import {
   getHomePageData,
   getPublishedPostBySlug,
   getSiteProfile,
   getPublishedPostsByCategory
 } from "../services/content.service.ts";
+
+import {
+  buildPageMetadata
+} from "../services/page-metadata.ts";
 
 import {
   mapCategorySlug,
@@ -23,8 +29,23 @@ export async function showHomePage(
 ) {
   try {
     const homePageData = await getHomePageData();
+    const { profile } = homePageData;
 
-    return res.render("home", homePageData);
+    return res.render("home", {
+      ...homePageData,
+
+      pageMetadata: buildPageMetadata(
+        env.SITE_ORIGIN,
+        {
+          title: "Little Things",
+          description: profile.heroText,
+          siteName: profile.siteName,
+          path: "/",
+          imageUrl: profile.profileImageUrl,
+          imageAlt: `${profile.siteName} profile image`
+        }
+      )
+    });
   } catch (error) {
     return next(error);
   }
@@ -64,7 +85,21 @@ export async function showPost(
 
     return res.render("post", {
       post,
-      profile
+      profile,
+
+      pageMetadata: buildPageMetadata(
+        env.SITE_ORIGIN,
+        {
+          title: post.title,
+          description: post.excerpt,
+          siteName: profile.siteName,
+          path:
+            `/posts/${encodeURIComponent(post.slug)}`,
+          type: "article",
+          imageUrl: post.featuredImageUrl,
+          imageAlt: post.altText
+        }
+      )
     });
   } catch (error) {
     return next(error);
@@ -95,13 +130,35 @@ export async function showCategoryPage(
       getSiteProfile()
     ]);
 
+    const categorySlug =
+      categoryParam.trim().toLowerCase();
+
+    const categoryTitle =
+      mapCategoryToTitle(categoryValue);
+
     return res.render("category", {
       profile,
       posts,
+
       category: {
-        slug: categoryParam.trim().toLowerCase(),
-        title: mapCategoryToTitle(categoryValue)
-      }
+        slug: categorySlug,
+        title: categoryTitle
+      },
+
+      pageMetadata: buildPageMetadata(
+        env.SITE_ORIGIN,
+        {
+          title: `${categoryTitle} notes`,
+
+          description:
+            `${categoryTitle} reviews, recommendations, and notes from ${profile.siteName}'s scrapbook.`,
+
+          siteName: profile.siteName,
+          path: `/categories/${categorySlug}`,
+          imageUrl: profile.profileImageUrl,
+          imageAlt: `${profile.siteName} profile image`
+        }
+      )
     });
   } catch (error) {
     return next(error);
