@@ -30,8 +30,21 @@
         </div>
       </div>
 
+      <%
+        // Longer copy uses the expanding layout from the first render.
+        const compactHeroContent = [
+          [heroCollage.primary.caption, 30],
+          [heroCollage.secondary.caption, 30],
+          [heroCollage.journal.date, 20],
+          [heroCollage.journal.text, 30],
+          [heroCollage.journal.emphasis, 30]
+        ].every(([text, limit]) =>
+          Array.from(text.replace(/\s+/g, ' ').trim()).length <= limit
+        );
+      %>
+      <div class="hero-visual">
       <div
-        class="hero-collage"
+        class="hero-collage <%= compactHeroContent ? 'hero-collage--overlap' : '' %>"
         aria-label="A scrapbook collage of books, movies, and coffee"
       >
         <div class="sunburst" aria-hidden="true"></div>
@@ -74,6 +87,7 @@
         </div>
 
         <span class="doodle doodle-curve" aria-hidden="true">〰</span>
+      </div>
       </div>
     </section>
 
@@ -283,6 +297,5 @@
   </main>
 
   <%- include('../partials/footer') %>
-  <script src="/js/main.js"></script>
 </body>
 </html>

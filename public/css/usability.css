@@ -134,10 +134,156 @@ figcaption,
   flex-wrap: wrap;
 }
 
-/* Clip decorative artwork rather than the whole document. */
-.hero-collage {
+/* Default to an expanding layout when the component has little room. */
+.hero-visual {
+  container: hero-visual / inline-size;
   min-width: 0;
-  overflow: clip;
+}
+
+.hero-collage {
+  --hero-layout: flow;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  align-items: start;
+  gap: 24px 18px;
+  width: min(500px, 100%);
+  height: auto;
+  min-width: 0;
+  margin: 20px auto;
+  padding: 24px;
+  transform: none;
+  overflow: visible;
+}
+
+.hero-collage .polaroid {
+  position: relative;
+  inset: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero-collage > :is(.sunburst, .sticker, .tape, .doodle) {
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-collage .polaroid-main {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  justify-self: end;
+  width: min(285px, 100%);
+  transform: rotate(-1deg);
+}
+
+.hero-collage .polaroid-main:hover {
+  transform: rotate(-1deg);
+}
+
+.hero-collage .polaroid-small {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  width: min(160px, 100%);
+  transform: rotate(1deg);
+}
+
+.hero-collage .polaroid-main img {
+  height: auto;
+  aspect-ratio: 263 / 330;
+}
+
+.hero-collage .polaroid-small img {
+  height: auto;
+  aspect-ratio: 138 / 145;
+}
+
+.hero-collage .journal-scrap {
+  position: relative;
+  inset: auto;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  justify-self: end;
+  width: min(260px, 100%);
+  height: auto;
+  min-height: 150px;
+  overflow-wrap: anywhere;
+  transform: none;
+}
+
+.hero-collage .sunburst {
+  left: 0;
+  right: 0;
+  width: min(400px, 100%);
+  height: auto;
+  margin-inline: auto;
+  aspect-ratio: 1;
+}
+
+/* Restore the original scrapbook composition when there is room for it.
+   Longer copy continues to use the expanding layout above. */
+@container hero-visual (min-width: 540px) {
+  .hero-collage--overlap {
+    --hero-layout: overlap;
+    display: block;
+    width: 100%;
+    height: 520px;
+    margin-block: 0;
+    padding: 0;
+  }
+
+  .hero-collage--overlap .polaroid-main {
+    position: absolute;
+    top: 65px;
+    left: 145px;
+    width: 285px;
+    transform: rotate(-5deg);
+  }
+
+  .hero-collage--overlap .polaroid-main:hover {
+    transform: rotate(-2deg) translateY(-5px);
+  }
+
+  /* Keep the caption in the space between the two overlapping papers. */
+  .hero-collage--overlap .polaroid-main figcaption {
+    padding-inline: 60px 100px;
+  }
+
+  .hero-collage--overlap .polaroid-small {
+    position: absolute;
+    top: 310px;
+    left: 31px;
+    width: 160px;
+    transform: rotate(8deg);
+  }
+
+  .hero-collage--overlap .journal-scrap {
+    position: absolute;
+    right: 10px;
+    bottom: 59px;
+    width: 190px;
+    height: 150px;
+    margin: 0;
+    transform: rotate(7deg);
+  }
+
+  .hero-collage--overlap .sunburst {
+    top: 60px;
+    left: 95px;
+    right: auto;
+    width: 400px;
+    margin-inline: 0;
+  }
+
+  .hero-collage--overlap .sticker,
+  .hero-collage--overlap .tape {
+    z-index: 9;
+  }
+
+  .hero-collage--overlap .tape {
+    z-index: 8;
+  }
 }
 
 /* Captions can grow onto multiple lines. */
@@ -167,6 +313,11 @@ figcaption,
 }
 
 @media (max-width: 540px) {
+  .hero-collage .polaroid,
+  .hero-collage .polaroid:hover {
+    transform: none;
+  }
+
   .public-site-header.navigation-ready {
     height: auto;
     min-height: 72px;
@@ -203,7 +354,7 @@ figcaption,
     transform: none;
   }
 
-  .polaroid-main:hover {
+  .hero-collage--overlap .polaroid-main:hover {
     transform: rotate(-5deg);
   }
 }

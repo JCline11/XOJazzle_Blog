@@ -35,7 +35,12 @@
     <span aria-hidden="true">☰</span>
   </button>
 
-  <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+  <a class="menu-toggle menu-fallback" href="#site-nav" aria-controls="site-nav">
+    <span>menu</span>
+    <span aria-hidden="true">☰</span>
+  </a>
+
+  <nav id="site-nav" class="site-nav" aria-label="Primary navigation" tabindex="-1">
     <% navigationItems.forEach((item) => { %>
       <% const isCurrent = item.path === normalizedPath; %>
       <a
@@ -44,6 +49,9 @@
         <% if (isCurrent) { %>aria-current="page"<% } %>
       ><%= item.label %></a>
     <% }) %>
+    <a class="navigation-close" href="#main-content">
+      close menu <span aria-hidden="true">×</span>
+    </a>
   </nav>
 
   <p class="header-note">

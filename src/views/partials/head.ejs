@@ -24,6 +24,10 @@
   <link rel="stylesheet" href="/css/navigation.css">
   <link rel="stylesheet" href="/css/usability.css">
 
+  <% if (!(typeof adminStyles !== 'undefined' && adminStyles)) { %>
+    <script src="/js/main.js" defer></script>
+  <% } %>
+
   <script src="/js/image-upload.js" defer></script>
 
   <% if (typeof adminStyles !== 'undefined' && adminStyles) { %>
