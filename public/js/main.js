@@ -1,43 +1,102 @@
-// Mobile navigation
 const menuToggle = document.querySelector(".menu-toggle");
 const siteNav = document.querySelector(".site-nav");
+const publicHeader = document.querySelector(".public-site-header");
 
-menuToggle?.addEventListener("click", () => {
-  const isOpen = siteNav.classList.toggle("open");
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-});
+if (
+  menuToggle &&
+  siteNav &&
+  publicHeader &&
+  typeof window.matchMedia === "function"
+) {
+  const mobile = window.matchMedia("(max-width: 800px)");
+  const links = Array.from(
+    document.querySelectorAll(".site-nav a")
+  );
 
-document.querySelectorAll(".site-nav a").forEach((link) => {
-  link.addEventListener("click", () => {
-    siteNav.classList.remove("open");
-    menuToggle?.setAttribute("aria-expanded", "false");
+  let open = false;
 
-    document.querySelectorAll(".site-nav a").forEach((item) => {
-      item.classList.remove("active");
-    });
+  function renderNavigation() {
+    const expanded = mobile.matches && open;
 
-    link.classList.add("active");
+    const toggleHadFocus =
+      document.activeElement === menuToggle;
+
+    const navigationHadFocus =
+      siteNav.contains(document.activeElement);
+
+    menuToggle.hidden = !mobile.matches;
+    siteNav.hidden = mobile.matches && !expanded;
+
+    siteNav.classList.toggle("open", expanded);
+
+    menuToggle.setAttribute(
+      "aria-expanded",
+      String(expanded)
+    );
+
+    if (siteNav.hidden && navigationHadFocus) {
+      menuToggle.focus();
+    }
+
+    if (!mobile.matches && toggleHadFocus) {
+      links[0]?.focus();
+    }
+  }
+
+  function closeNavigation(restoreFocus = false) {
+    open = false;
+    renderNavigation();
+
+    if (restoreFocus && mobile.matches) {
+      menuToggle.focus();
+    }
+  }
+
+  menuToggle.addEventListener("click", () => {
+    open = !open;
+    renderNavigation();
   });
-});
 
-// Reveal styles live in style.css so they follow the site's CSP.
-// Leave content visible when IntersectionObserver is unavailable.
-if ("IntersectionObserver" in window) {
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        revealObserver.unobserve(entry.target);
+  links.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (mobile.matches) {
+        closeNavigation();
       }
     });
-  }, { threshold: 0.08 });
+  });
 
-  document
-    .querySelectorAll(
-      ".love-card, .post-card, .watchlist-card, .about-photo"
-    )
-    .forEach((element) => {
-      element.classList.add("reveal");
-      revealObserver.observe(element);
-    });
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      mobile.matches &&
+      open
+    ) {
+      event.preventDefault();
+      closeNavigation(true);
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!publicHeader.contains(event.target)) {
+      closeNavigation();
+    }
+  });
+
+  document.addEventListener("focusin", (event) => {
+    if (
+      mobile.matches &&
+      open &&
+      !publicHeader.contains(event.target)
+    ) {
+      closeNavigation();
+    }
+  });
+
+  mobile.addEventListener("change", () => {
+    open = false;
+    renderNavigation();
+  });
+
+  publicHeader.classList.add("navigation-ready");
+  renderNavigation();
 }
