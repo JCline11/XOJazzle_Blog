@@ -1,0 +1,209 @@
+:root {
+  --rose: #8d4658;
+  --muted: #68595e;
+  --sage-dark: #4d6347;
+}
+
+/* Expose genuine overflow so it can be fixed at its source. */
+body {
+  overflow-x: visible;
+}
+
+:is(a, button, input, textarea, select, summary):focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: 4px;
+}
+
+#main-content:focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: -3px;
+}
+
+.site-footer a:focus-visible {
+  outline-color: #fff;
+}
+
+/* Comfortable standalone links and controls. */
+:is(
+  button,
+  .button,
+  .brand,
+  .site-nav a,
+  .filter,
+  .read-more,
+  .admin-nav a,
+  .admin-row-actions a,
+  .article-back-link,
+  .simple-post-home,
+  .footer-top nav a
+) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+button,
+.menu-toggle,
+.admin-delete-trigger {
+  min-width: 44px;
+}
+
+.read-more {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.admin-page a:not(.button):not(.brand) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.admin-page :is(input, textarea, select):not([type="hidden"]) {
+  border-color: var(--muted);
+}
+
+.admin-page :is(input, textarea, select)[aria-invalid="true"] {
+  border-color: #923c50;
+}
+
+/* Readable supporting copy. */
+.post-body p,
+.watchlist-card p,
+.watchlist-intro,
+.section-subtitle,
+.about-copy p {
+  font-size: 1rem;
+}
+
+.love-note p {
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+:is(
+  .eyebrow,
+  .post-tag,
+  .post-body time,
+  .read-more,
+  .filter,
+  .article-meta,
+  .article-back-link,
+  .simple-post-home,
+  .footer-bottom
+) {
+  font-size: .75rem;
+}
+
+.site-nav,
+.admin-nav,
+.admin-row-actions,
+.footer-top nav {
+  font-size: .8125rem;
+}
+
+/* Long author-entered content must fit its container. */
+h1,
+h2,
+h3,
+p,
+figcaption,
+.admin-post-details {
+  overflow-wrap: anywhere;
+}
+
+.loving-grid > *,
+.posts-grid > *,
+.about-section > *,
+.watchlist-inner > *,
+.simple-post-title,
+.love-note {
+  min-width: 0;
+}
+
+.love-note {
+  flex: 1 1 0;
+}
+
+.about-photo {
+  width: min(390px, 100%);
+  min-width: 0;
+}
+
+.footer-top nav {
+  flex-wrap: wrap;
+}
+
+/* Clip decorative artwork rather than the whole document. */
+.hero-collage {
+  min-width: 0;
+  overflow: clip;
+}
+
+/* Captions can grow onto multiple lines. */
+.simple-post-cover {
+  padding-bottom: 13px;
+}
+
+.simple-post-cover figcaption {
+  position: static;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Cards remain visible if an older page still has reveal classes. */
+.reveal,
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 801px) {
+  .hero {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .public-site-header.navigation-ready {
+    height: auto;
+    min-height: 72px;
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+
+  .photo-caption {
+    right: 0;
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  html:focus-within {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .button:hover,
+  .post-card:hover,
+  .post-card:hover .post-image img,
+  .article-back-link:hover,
+  .article-back-link:hover span {
+    transform: none;
+  }
+
+  .polaroid-main:hover {
+    transform: rotate(-5deg);
+  }
+}
