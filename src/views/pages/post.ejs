@@ -19,7 +19,7 @@
     const quoteAfterIndex = Math.min(1, paragraphs.length - 1);
   %>
 
-  <main class="simple-post-page">
+  <main id="main-content" tabindex="-1" class="simple-post-page">
     <% if (previewMode) { %>
       <aside class="editor-preview" aria-label="Saved post preview">
         <p class="hand-label">
@@ -48,12 +48,14 @@
 
         <div class="simple-post-title">
           <p class="eyebrow">
-            <span class="eyebrow-line"></span>
+            <span class="eyebrow-line" aria-hidden="true"></span>
             <%= post.categoryLabel %> journal
           </p>
+
           <h1>
-            <%= post.title %><span class="pink-dot">.</span>
+            <%= post.title %><span class="pink-dot" aria-hidden="true">.</span>
           </h1>
+
           <p class="simple-post-excerpt"><%= post.excerpt %></p>
 
           <div class="article-meta" aria-label="Post information">
@@ -70,7 +72,12 @@
           <img
             src="<%= post.featuredImageUrl %>"
             alt="<%= post.altText %>"
+            width="600"
+            height="900"
+            loading="eager"
+            decoding="async"
           >
+
           <% if (post.imageCaption) { %>
             <figcaption><%= post.imageCaption %></figcaption>
           <% } %>
@@ -112,7 +119,7 @@
 
         <a class="simple-post-home" href="/">
           keep wandering through the scrapbook
-          <span>→</span>
+          <span aria-hidden="true">→</span>
         </a>
       </div>
     </article>

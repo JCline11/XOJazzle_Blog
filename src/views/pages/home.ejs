@@ -5,24 +5,27 @@
   <div class="paper-grain" aria-hidden="true"></div>
   <%- include('../partials/header') %>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section id="home" class="hero section-wrap">
       <div class="hero-copy">
         <p class="eyebrow">
-          <span class="eyebrow-line"></span>
+          <span class="eyebrow-line" aria-hidden="true"></span>
           <%= profile.siteName %>'s little corner
         </p>
+
         <h1>
           Welcome to my<br><em>cozy</em> corner<br>
-          of the internet<span class="pink-dot">.</span>
+          of the internet<span class="pink-dot" aria-hidden="true">.</span>
         </h1>
+
         <p class="hero-intro"><%= profile.heroText %></p>
+
         <div class="hero-actions">
           <a class="button button-primary" href="#latest">
-            wander through <span>→</span>
+            wander through <span aria-hidden="true">→</span>
           </a>
           <a class="text-link" href="#about">
-            a little about me <span>↗</span>
+            a little about me <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
@@ -40,6 +43,11 @@
           <img
             src="<%= heroCollage.primary.imageUrl %>"
             alt="<%= heroCollage.primary.altText %>"
+            width="263"
+            height="330"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
           >
           <figcaption><%= heroCollage.primary.caption %></figcaption>
         </figure>
@@ -48,6 +56,10 @@
           <img
             src="<%= heroCollage.secondary.imageUrl %>"
             alt="<%= heroCollage.secondary.altText %>"
+            width="138"
+            height="145"
+            loading="eager"
+            decoding="async"
           >
           <figcaption><%= heroCollage.secondary.caption %></figcaption>
         </figure>
@@ -58,7 +70,7 @@
             <%= heroCollage.journal.text %><br>
             <strong><%= heroCollage.journal.emphasis %></strong>
           </p>
-          <span class="journal-heart">♡</span>
+          <span class="journal-heart" aria-hidden="true">♡</span>
         </div>
 
         <span class="doodle doodle-curve" aria-hidden="true">〰</span>
@@ -85,7 +97,7 @@
       <div class="loving-grid">
         <article class="love-card love-book">
           <p class="love-card-label">
-            currently reading <span>♡</span>
+            currently reading <span aria-hidden="true">♡</span>
           </p>
 
           <div class="love-content">
@@ -93,8 +105,13 @@
               <img
                 src="<%= currentlyLoving.reading.coverImageUrl %>"
                 alt="<%= currentlyLoving.reading.coverAltText %>"
+                width="126"
+                height="162"
+                loading="lazy"
+                decoding="async"
               >
             </div>
+
             <div class="love-note">
               <h3><%= currentlyLoving.reading.title %></h3>
               <span class="hand-label">my note</span>
@@ -105,7 +122,7 @@
 
         <article class="love-card love-movie">
           <p class="love-card-label">
-            currently watching <span>✦</span>
+            currently watching <span aria-hidden="true">✦</span>
           </p>
 
           <div class="love-content">
@@ -113,8 +130,13 @@
               <img
                 src="<%= currentlyLoving.watching.coverImageUrl %>"
                 alt="<%= currentlyLoving.watching.coverAltText %>"
+                width="132"
+                height="168"
+                loading="lazy"
+                decoding="async"
               >
             </div>
+
             <div class="love-note">
               <h3><%= currentlyLoving.watching.title %></h3>
               <span class="hand-label">my note</span>
@@ -155,7 +177,12 @@
           </div>
         <% } else { %>
           <% latestPosts.forEach((post, index) => { %>
-            <%- include("../partials/postcard", { post, index }) %>
+            <%- include("../partials/postcard", {
+              post,
+              index,
+              eager: false,
+              headingLevel: 3
+            }) %>
           <% }) %>
         <% } %>
       </div>
@@ -176,6 +203,7 @@
           <p class="watchlist-intro">
             The books, movies, and shows I cannot wait to finally experience.
           </p>
+
           <div class="category-doodle" aria-hidden="true">
             <span>✦</span>
             <strong>watch<br>list</strong>
@@ -224,6 +252,10 @@
         <img
           src="<%= profile.profileImageUrl %>"
           alt="Portrait of <%= profile.siteName %>"
+          width="600"
+          height="570"
+          loading="lazy"
+          decoding="async"
         >
         <span class="photo-caption">hello, I’m XOJazzle ✿</span>
       </div>
@@ -243,7 +275,7 @@
             class="button button-secondary"
             href="mailto:<%= profile.contactEmail %>"
           >
-            say hello <span>♡</span>
+            say hello <span aria-hidden="true">♡</span>
           </a>
         <% } %>
       </div>
