@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
-  PutObjectCommand
+  PutObjectCommand,
+  type S3Client
 } from "@aws-sdk/client-s3";
 
 import { loadR2Config } from "../config/r2-env.ts";
@@ -11,10 +12,22 @@ import {
   type ImageStorage
 } from "./image-storage.ts";
 
+const clients = new Set<S3Client>();
+
+export function closeR2Clients(): void {
+  for (const client of clients) {
+    client.destroy();
+  }
+
+  clients.clear();
+}
+
 export function createConfiguredR2ImageStorage():
 ImageStorage {
   const config = loadR2Config();
   const client = createR2Client(config);
+
+  clients.add(client);
 
   return createImageStorage(
     {

@@ -1,5 +1,7 @@
 import { Router } from "express";
 
+import { lifecycle } from "../lib/lifecycle.ts";
+
 import {
   loginLimiter
 } from "../middleware/login-rate-limiting.ts";
@@ -50,63 +52,79 @@ const adminRouter = Router();
 
 adminRouter.use(exposeCsrfToken);
 
-adminRouter.get("/login", showLoginPage);
+adminRouter.get(
+  "/login",
+  lifecycle.wrap(showLoginPage)
+);
 
 adminRouter.post(
   "/login",
   requireCsrf,
   loginLimiter,
-  login
+  lifecycle.wrap(login)
 );
 
-adminRouter.use(requireAdmin);
+adminRouter.use(lifecycle.wrap(requireAdmin));
 
-adminRouter.get("/", showAdminDashboard);
+adminRouter.get(
+  "/",
+  lifecycle.wrap(showAdminDashboard)
+);
 
-adminRouter.get("/posts/new", showCreatePostForm);
+adminRouter.get(
+  "/posts/new",
+  lifecycle.wrap(showCreatePostForm)
+);
 
 adminRouter.get(
   "/posts/:id/preview",
-  showPostPreview
+  lifecycle.wrap(showPostPreview)
 );
 
 adminRouter.post(
   "/posts",
   parsePostImages,
   requireCsrf,
-  createPost,
+  lifecycle.wrap(createPost),
   imageUploadErrorHandler
 );
 
 adminRouter.get(
   "/posts/:id/edit",
-  showEditPostForm
+  lifecycle.wrap(showEditPostForm)
 );
 
 adminRouter.post(
   "/posts/:id",
   parsePostImages,
   requireCsrf,
-  updatePost,
+  lifecycle.wrap(updatePost),
   imageUploadErrorHandler
 );
 
 adminRouter.post(
   "/posts/:id/delete",
   requireCsrf,
-  deletePost
+  lifecycle.wrap(deletePost)
 );
 
-adminRouter.get("/homepage", showHomepageForm);
+adminRouter.get(
+  "/homepage",
+  lifecycle.wrap(showHomepageForm)
+);
 
 adminRouter.post(
   "/homepage",
   parseHomepageImages,
   requireCsrf,
-  updateHomepage,
+  lifecycle.wrap(updateHomepage),
   imageUploadErrorHandler
 );
 
-adminRouter.post("/logout", requireCsrf, logout);
+adminRouter.post(
+  "/logout",
+  requireCsrf,
+  lifecycle.wrap(logout)
+);
 
 export default adminRouter;

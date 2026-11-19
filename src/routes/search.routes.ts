@@ -1,5 +1,7 @@
 import { Router } from "express";
 
+import { lifecycle } from "../lib/lifecycle.ts";
+
 import {
   showRobots,
   showSitemap
@@ -7,7 +9,14 @@ import {
 
 const searchRouter = Router();
 
-searchRouter.get("/robots.txt", showRobots);
-searchRouter.get("/sitemap.xml", showSitemap);
+searchRouter.get(
+  "/robots.txt",
+  lifecycle.wrap(showRobots)
+);
+
+searchRouter.get(
+  "/sitemap.xml",
+  lifecycle.wrap(showSitemap)
+);
 
 export default searchRouter;
