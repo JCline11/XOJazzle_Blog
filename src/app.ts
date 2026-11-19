@@ -8,6 +8,10 @@ import adminRouter from "./routes/admin.routes.ts";
 import searchRouter from "./routes/search.routes.ts";
 
 import {
+  createHealthRouter
+} from "./routes/health.routes.ts";
+
+import {
   sessionMiddleware
 } from "./config/session.ts";
 
@@ -16,6 +20,7 @@ import {
 } from "./middleware/private-page.ts";
 
 import { env } from "./config/env.ts";
+import { pgPool } from "./lib/postgres.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,6 +72,18 @@ app.use(
             : null
       }
     }
+  })
+);
+
+// Answer health checks before sessions and content routes.
+app.use(
+  createHealthRouter(async () => {
+    const query = {
+      text: "SELECT 1",
+      query_timeout: 1_000
+    };
+
+    await pgPool.query(query);
   })
 );
 
