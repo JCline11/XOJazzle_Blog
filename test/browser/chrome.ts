@@ -126,12 +126,26 @@ export async function launchChrome() {
   const profile = await mkdtemp(path.join(temporaryRoot, "xojazzle-browser-test-"));
   let processHandle: ChildProcess | undefined;
   let connection: Connection | undefined;
-  let exited: Promise<unknown> | undefined;
+  let exited: Promise<void> | undefined;
+  let finished = false;
+  let processStatus = "still running";
+  let stderr = "";
+
+  function startupError(message: string): Error {
+    return new Error(
+      message +
+      "\nExecutable: " + executable +
+      "\nProcess status: " + processStatus +
+      "\nChrome stderr (last 8192 characters):\n" +
+      (stderr.trim() || "(none captured)")
+    );
+  }
+
   async function close() {
     try {
       await connection?.send("Browser.close").catch(() => {});
       if (processHandle) {
-        const timeout = setTimeout(() => processHandle?.kill(), 5_000);
+        const timeout = setTimeout(() => processHandle?.kill("SIGKILL"), 5_000);
         try { await exited; } finally { clearTimeout(timeout); }
       }
     } finally {
@@ -146,21 +160,48 @@ export async function launchChrome() {
     processHandle = spawn(executable, [
       "--headless=new", "--no-first-run", "--no-default-browser-check",
       "--remote-debugging-address=127.0.0.1", "--remote-debugging-port=0",
-      `--user-data-dir=${profile}`, "about:blank"
-    ], { windowsHide: true, stdio: "ignore" });
-    exited = new Promise((resolve, reject) => {
-      processHandle!.once("exit", resolve);
-      processHandle!.once("error", reject);
+      "--user-data-dir=" + profile, "about:blank"
+    ], { windowsHide: true, stdio: ["ignore", "ignore", "pipe"] });
+
+    processHandle.stderr?.setEncoding("utf8");
+    processHandle.stderr?.on("data", (chunk: string) => {
+      stderr = (stderr + chunk).slice(-8192);
     });
+
+    exited = new Promise<void>(resolve => {
+      processHandle!.once("error", (error: Error) => {
+        processStatus = "launch error: " + error.message;
+      });
+      processHandle!.once("close", (code, signal) => {
+        finished = true;
+        if (!processStatus.startsWith("launch error:")) {
+          processStatus = "exit code " + String(code) +
+            ", signal " + String(signal);
+        }
+        resolve();
+      });
+    });
+
     let endpoint = "";
     for (let attempt = 0; attempt < 100; attempt++) {
+      if (finished) break;
       try {
-        const [port, route] = (await readFile(path.join(profile, "DevToolsActivePort"), "utf8")).trim().split(/\r?\n/);
-        endpoint = `ws://127.0.0.1:${port}${route}`;
-        break;
-      } catch { await new Promise(resolve => setTimeout(resolve, 100)); }
+        const [port, route] = (await readFile(path.join(profile, "DevToolsActivePort"), "utf8"))
+          .trim().split("\n").map(line => line.trim());
+        if (port && route?.startsWith("/devtools/browser/")) {
+          endpoint = "ws://127.0.0.1:" + port + route;
+          break;
+        }
+      } catch {
+        // Chrome may not have written the endpoint file yet.
+      }
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
-    if (!endpoint) throw new Error("Could not start the test browser.");
+
+    if (!endpoint) {
+      throw startupError("Chrome did not expose its debugging endpoint during startup.");
+    }
+
     const socket = new WebSocket(endpoint);
     await new Promise<void>((resolve, reject) => {
       socket.addEventListener("open", () => resolve(), { once: true });
