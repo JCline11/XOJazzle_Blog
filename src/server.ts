@@ -58,13 +58,16 @@ function stop(reason: string, status = 0): void {
 
   stopStarted = true;
 
-  console.log(`Shutdown requested: ${reason}.`);
+  console.log(
+    `Shutdown requested: ${reason}. ` +
+    `Budget: ${env.SHUTDOWN_TIMEOUT_MS} ms.`
+  );
 
   void lifecycle.shutdown(
     server,
     closeResources,
     {
-      timeoutMs: 25_000,
+      timeoutMs: env.SHUTDOWN_TIMEOUT_MS,
 
       onTimeout() {
         console.error("Shutdown deadline exceeded.");

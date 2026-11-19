@@ -2,7 +2,8 @@ import multer from "multer";
 
 import type {
   ErrorRequestHandler,
-  RequestHandler
+  RequestHandler,
+  Response
 } from "express";
 
 import {
@@ -10,6 +11,17 @@ import {
   isAllowedReportedMime,
   MAX_IMAGE_BYTES
 } from "../config/image-upload.ts";
+
+import { lifecycle } from "../lib/lifecycle.ts";
+
+type UploadState = {
+  phase: "parsing" | "ready" | "running";
+  release: () => void;
+};
+
+const MAX_ACTIVE_UPLOAD_REQUESTS = 2;
+
+const uploadStates = new WeakMap<Response, UploadState>();
 
 let activeUploadRequests = 0;
 
@@ -48,6 +60,14 @@ function createParser(
   }).fields(fields);
 
   return (req, res, next) => {
+    if (
+      req.aborted ||
+      res.destroyed ||
+      res.writableEnded
+    ) {
+      return;
+    }
+
     if (!req.is("multipart/form-data")) {
       next(
         new ImageUploadError(
@@ -58,7 +78,7 @@ function createParser(
       return;
     }
 
-    if (activeUploadRequests >= 2) {
+    if (activeUploadRequests >= MAX_ACTIVE_UPLOAD_REQUESTS) {
       next(
         new ImageUploadError(
           "Uploads are busy. Please try again shortly.",
@@ -69,26 +89,51 @@ function createParser(
     }
 
     activeUploadRequests += 1;
+
     let released = false;
 
-    const release = () => {
-      if (released) {
+    const state: UploadState = {
+      phase: "parsing",
+
+      release() {
+        if (released) {
+          return;
+        }
+
+        released = true;
+        activeUploadRequests -= 1;
+
+        uploadStates.delete(res);
+
+        res.off("finish", onResponseComplete);
+        res.off("close", onResponseComplete);
+      }
+    };
+
+    const onResponseComplete = () => {
+      if (state.phase === "ready") {
+        state.release();
+      }
+    };
+
+    uploadStates.set(res, state);
+
+    res.once("finish", onResponseComplete);
+    res.once("close", onResponseComplete);
+
+    const onParsed = (error?: unknown) => {
+      state.phase = "ready";
+
+      if (
+        req.aborted ||
+        res.destroyed ||
+        res.writableEnded
+      ) {
+        state.release();
         return;
       }
 
-      released = true;
-      activeUploadRequests -= 1;
-      res.off("finish", release);
-      res.off("close", release);
-    };
-
-    res.once("finish", release);
-    res.once("close", release);
-
-    parse(req, res, (error: unknown) => {
       if (error) {
-        release();
-
         if (error instanceof ImageUploadError) {
           next(error);
           return;
@@ -132,8 +177,6 @@ function createParser(
         values.some(value => typeof value !== "string") ||
         textBytes > 256_000
       ) {
-        release();
-
         next(
           new ImageUploadError(
             "The form contains invalid or oversized text fields."
@@ -143,8 +186,53 @@ function createParser(
       }
 
       next();
-    });
+    };
+
+    try {
+      parse(req, res, onParsed);
+    } catch (error) {
+      state.phase = "ready";
+      next(error);
+    }
   };
+}
+
+export function runUploadController(
+  handler: RequestHandler
+): RequestHandler {
+  return lifecycle.wrap(async (req, res, next) => {
+    if (
+      req.aborted ||
+      res.destroyed ||
+      res.writableEnded
+    ) {
+      uploadStates.get(res)?.release();
+      return;
+    }
+
+    const state = uploadStates.get(res);
+
+    if (!state) {
+      next(
+        new Error(
+          "Upload controller reached without an upload slot."
+        )
+      );
+      return;
+    }
+
+    state.phase = "running";
+
+    try {
+      await handler(req, res, next);
+    } finally {
+      state.phase = "ready";
+
+      if (res.writableFinished || res.destroyed) {
+        state.release();
+      }
+    }
+  });
 }
 
 export const parsePostImages = createParser([

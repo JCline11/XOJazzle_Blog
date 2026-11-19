@@ -47,7 +47,15 @@ const envSchema = z.object({
     .max(65535)
     .default(3000),
 
-  SITE_ORIGIN: z.string().optional()
+  SITE_ORIGIN: z.string().optional(),
+
+  // Keep this below the hosting platform's shutdown allowance.
+  SHUTDOWN_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(1_000)
+    .max(240_000)
+    .default(25_000)
 });
 
 export function loadAppEnv(source: EnvironmentSource) {
@@ -84,6 +92,7 @@ export function loadAppEnv(source: EnvironmentSource) {
     SESSION_SECRET: values.SESSION_SECRET,
     NODE_ENV: values.NODE_ENV,
     PORT: values.PORT,
-    SITE_ORIGIN: siteOrigin
+    SITE_ORIGIN: siteOrigin,
+    SHUTDOWN_TIMEOUT_MS: values.SHUTDOWN_TIMEOUT_MS
   };
 }

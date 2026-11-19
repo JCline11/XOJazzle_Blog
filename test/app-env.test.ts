@@ -48,6 +48,7 @@ describe("application environment", () => {
     assert.equal(values.NODE_ENV, "development");
     assert.equal(values.PORT, 3000);
     assert.equal(values.SITE_ORIGIN, "http://localhost:3000");
+    assert.equal(values.SHUTDOWN_TIMEOUT_MS, 25_000);
   });
 
   it("supports test mode and converts the port to a number", () => {
@@ -74,6 +75,7 @@ describe("application environment", () => {
       "NODE_ENV",
       "PORT",
       "SESSION_SECRET",
+      "SHUTDOWN_TIMEOUT_MS",
       "SITE_ORIGIN"
     ]);
   });
@@ -125,6 +127,39 @@ describe("application environment", () => {
           [name]: value
         })),
         new RegExp(name)
+      );
+    }
+  });
+
+  it("accepts configurable shutdown budgets in milliseconds", () => {
+    for (const value of ["1000", "90000", "240000"]) {
+      const values = loadAppEnv(production({
+        SHUTDOWN_TIMEOUT_MS: value
+      }));
+
+      assert.equal(
+        values.SHUTDOWN_TIMEOUT_MS,
+        Number(value)
+      );
+    }
+  });
+
+  it("rejects invalid shutdown budgets", () => {
+    for (const value of [
+      "",
+      "-1",
+      "0",
+      "999",
+      "240001",
+      "25000.5",
+      "not-a-number",
+      "Infinity"
+    ]) {
+      assert.throws(
+        () => loadAppEnv(development({
+          SHUTDOWN_TIMEOUT_MS: value
+        })),
+        /SHUTDOWN_TIMEOUT_MS/
       );
     }
   });
@@ -193,6 +228,13 @@ describe("application environment", () => {
 
         run: () => loadAppEnv(production({
           R2_ACCOUNT_ID: marker
+        }))
+      },
+      {
+        field: "SHUTDOWN_TIMEOUT_MS",
+
+        run: () => loadAppEnv(development({
+          SHUTDOWN_TIMEOUT_MS: marker
         }))
       }
     ];

@@ -45,7 +45,8 @@ import {
 import {
   imageUploadErrorHandler,
   parseHomepageImages,
-  parsePostImages
+  parsePostImages,
+  runUploadController
 } from "../middleware/image-upload.ts";
 
 const adminRouter = Router();
@@ -85,7 +86,7 @@ adminRouter.post(
   "/posts",
   parsePostImages,
   requireCsrf,
-  lifecycle.wrap(createPost),
+  runUploadController(createPost),
   imageUploadErrorHandler
 );
 
@@ -98,7 +99,7 @@ adminRouter.post(
   "/posts/:id",
   parsePostImages,
   requireCsrf,
-  lifecycle.wrap(updatePost),
+  runUploadController(updatePost),
   imageUploadErrorHandler
 );
 
@@ -117,7 +118,7 @@ adminRouter.post(
   "/homepage",
   parseHomepageImages,
   requireCsrf,
-  lifecycle.wrap(updateHomepage),
+  runUploadController(updateHomepage),
   imageUploadErrorHandler
 );
 
