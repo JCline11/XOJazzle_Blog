@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+  <div class="paper-grain" aria-hidden="true"></div>
+  <%- include('../partials/header') %>
+
+  <main id="main-content" tabindex="-1">
+    <section
+      class="section-wrap error-section"
+      aria-labelledby="error-title"
+    >
+      <div class="section-heading centered-heading">
+        <h1 id="error-title">Something went wrong.</h1>
+        <p class="section-subtitle">
+          We could not load this page. Please try again later.
+        </p>
+      </div>
+
+      <div class="error-actions">
+        <a class="button button-primary" href="/">
+          return home <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>

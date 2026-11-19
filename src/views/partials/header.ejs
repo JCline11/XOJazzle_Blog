@@ -1,19 +1,60 @@
-<header class="site-header">
-    <a class="brand" href="/#home" aria-label="XOJazzle home">
-		<span class="brand-mark">✿</span>
-		<span>XOJazzle<span class="brand-dot">.</span></span>
-	</a>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-		<span>menu</span>
-		<span aria-hidden="true">☰</span>
-	</button>
-    <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-		<a class="active" href="/#home">Home</a>
-		<a href="/#movies">Movies</a>
-		<a href="/#books">Books</a>
-		<a href="/#anime">Anime</a>
-		<a href="/#tv">TV Shows</a>
-		<a href="/#about">About me</a>
-	</nav>
-    <p class="header-note">est. 2024 <span>♡</span></p>
-  </header>
+<%
+  const normalizedPath =
+    (
+      typeof currentPath === 'string'
+        ? currentPath.toLowerCase().replace(/\/+$/, '')
+        : ''
+    ) || '/';
+
+  const navigationItems = [
+    { label: 'Home', href: '/#home', path: '/' },
+    { label: 'Books', href: '/categories/books', path: '/categories/books' },
+    { label: 'Movies', href: '/categories/movies', path: '/categories/movies' },
+    { label: 'Anime', href: '/categories/anime', path: '/categories/anime' },
+    { label: 'TV Shows', href: '/categories/tv', path: '/categories/tv' },
+    { label: 'About me', href: '/#about', path: null }
+  ];
+%>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header class="site-header public-site-header">
+  <a class="brand" href="/#home" aria-label="XOJazzle home">
+    <span class="brand-mark" aria-hidden="true">✿</span>
+    <span>XOJazzle<span class="brand-dot">.</span></span>
+  </a>
+
+  <button
+    class="menu-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="site-nav"
+    hidden
+  >
+    <span>menu</span>
+    <span aria-hidden="true">☰</span>
+  </button>
+
+  <a class="menu-toggle menu-fallback" href="#site-nav" aria-controls="site-nav">
+    <span>menu</span>
+    <span aria-hidden="true">☰</span>
+  </a>
+
+  <nav id="site-nav" class="site-nav" aria-label="Primary navigation" tabindex="-1">
+    <% navigationItems.forEach((item) => { %>
+      <% const isCurrent = item.path === normalizedPath; %>
+      <a
+        href="<%= item.href %>"
+        class="<%= isCurrent ? 'active' : '' %>"
+        <% if (isCurrent) { %>aria-current="page"<% } %>
+      ><%= item.label %></a>
+    <% }) %>
+    <a class="navigation-close" href="#main-content">
+      close menu <span aria-hidden="true">×</span>
+    </a>
+  </nav>
+
+  <p class="header-note">
+    est. 2024 <span aria-hidden="true">♡</span>
+  </p>
+</header>

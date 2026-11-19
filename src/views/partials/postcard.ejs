@@ -1,21 +1,50 @@
 <%
   const cardColors = ["pink", "sage", "lavender"];
   const cardColor = cardColors[index % cardColors.length];
+
+  const loadEagerly =
+    typeof eager !== 'undefined' && eager;
+
+  const useSecondLevelHeading =
+    typeof headingLevel !== 'undefined' &&
+    headingLevel === 2;
 %>
 
-<article class="post-card post-<%= cardColor %>" data-category="<%= post.categoryLabel %>">
-	<div class="post-image">
-		<img src="<%= post.featuredImageUrl %>" alt="<%= post.altText %>">
-		<span class="post-tag"><%= post.categoryLabel %></span>
-	</div>
-	<div class="post-body">
-		<time datetime="<%= post.publishedDateTime %>">
-			<%= post.publishedDate %>
-		</time>
-		<h3><%= post.title %></h3>
-		<p><%= post.excerpt %></p>
-		<a href="<%= post.url %>" class="read-more">read the note <span>→
-		</span>
-		</a>
-	</div>
+<article
+  class="post-card post-<%= cardColor %>"
+  data-category="<%= post.categoryLabel %>"
+>
+  <div class="post-image">
+    <img
+      src="<%= post.featuredImageUrl %>"
+      alt="<%= post.altText %>"
+      width="640"
+      height="380"
+      loading="<%= loadEagerly ? 'eager' : 'lazy' %>"
+      decoding="async"
+    >
+    <span class="post-tag"><%= post.categoryLabel %></span>
+  </div>
+
+  <div class="post-body">
+    <time datetime="<%= post.publishedDateTime %>">
+      <%= post.publishedDate %>
+    </time>
+
+    <% if (useSecondLevelHeading) { %>
+      <h2><%= post.title %></h2>
+    <% } else { %>
+      <h3><%= post.title %></h3>
+    <% } %>
+
+    <p><%= post.excerpt %></p>
+
+    <a
+      href="<%= post.url %>"
+      class="read-more"
+      aria-label="Read the note: <%= post.title %>"
+    >
+      read the note <span aria-hidden="true">→</span>
+    </a>
+  </div>
 </article>

@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build and test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ci_only_password
+          POSTGRES_DB: xojazzle_test
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U ci_user -d xojazzle_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://ci_user:ci_only_password@127.0.0.1:5432/xojazzle_ci_unused
+      TEST_DATABASE_URL: postgresql://ci_user:ci_only_password@127.0.0.1:5432/xojazzle_test
+      SESSION_SECRET: ci-only-session-secret-at-least-32-characters
+      SITE_ORIGIN: http://localhost:3000
+      SHUTDOWN_TIMEOUT_MS: "25000"
+      CHROME_PATH: /usr/bin/google-chrome
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+          cache: npm
+
+      - name: Show runtime versions
+        run: |
+          node --version
+          npm --version
+          "$CHROME_PATH" --version
+
+      - name: Install locked dependencies
+        run: npm ci --include=dev --no-audit
+
+      - name: Validate, generate, and typecheck
+        run: npm run build
+
+      - name: Apply migrations to disposable test database
+        run: npx --no-install prisma migrate deploy --config test/prisma.config.ts
+
+      - name: Run all test suites
+        run: npm run test:all
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high

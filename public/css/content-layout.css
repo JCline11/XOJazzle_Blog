@@ -1,0 +1,20 @@
+/* Keep image frames stable while their files load. */
+.post-image img {
+  display: block;
+}
+
+.simple-post-cover img {
+  height: auto;
+  aspect-ratio: 2 / 3;
+}
+
+.about-photo img {
+  height: auto;
+  aspect-ratio: 1 / .95;
+}
+
+/* Category cards use h2; homepage cards use h3. */
+.post-body :is(h2, h3) {
+  margin: 9px 0 10px;
+  font: 25px/1.05 var(--serif);
+}

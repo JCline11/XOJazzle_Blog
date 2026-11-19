@@ -1,0 +1,70 @@
+/* The private studio shares the blog's paper, rose, and handwritten details. */
+.admin-page .admin-main { width: min(980px, calc(100% - 48px)); margin-inline: auto; padding: 48px 0 88px; }
+.admin-page .simple-post-header { width: 100%; margin-bottom: 32px; }
+.admin-page .simple-post-header .article-back-link { margin-bottom: 36px; }
+.admin-page .simple-post-title { width: 100%; text-align: center; }
+.admin-page .simple-post-title .eyebrow { justify-content: center; }
+.admin-page .simple-post-title h1 { font-size: clamp(42px, 6vw, 66px); margin-bottom: 18px; }
+.admin-page .simple-post-excerpt { max-width: 520px; font-size: 16px; margin-bottom: 0; }
+.admin-page .simple-post-body { width: 100%; margin-inline: auto; padding-bottom: 0; }
+.admin-page .admin-paper { margin-top: 0; padding: clamp(24px, 4vw, 44px); border: 1px solid var(--line); border-radius: 12px; background: var(--paper); box-shadow: 0 12px 38px rgba(133, 83, 87, .08); }
+.admin-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; font-size: 12px; font-weight: 800; color: var(--rose); }
+.admin-nav a { padding-block: 10px; border-bottom: 1px solid transparent; }
+.admin-nav a:hover { border-color: var(--rose); }
+.admin-page .button { justify-content: center; min-height: 44px; border: 1px solid var(--rose); font-family: var(--sans); cursor: pointer; text-align: center; }
+.admin-page .button-secondary { background: transparent; }
+.admin-page :is(a, button, input, textarea, select):focus-visible { outline: 3px solid var(--rose); outline-offset: 4px; }
+.admin-page :is(input, textarea, select):not([type="hidden"]) { display: block; width: 100%; max-width: 100%; min-height: 46px; padding: 12px 14px; border: 1px solid #d8c5c1; border-radius: 6px; background: #fff; color: var(--ink); font: 16px/1.6 var(--sans); }
+.admin-page textarea { resize: vertical; }
+.admin-page input[type="file"] { padding: 8px; background: var(--cream); }
+.admin-page input[type="file"]::file-selector-button { margin-right: 12px; padding: 9px 12px; border: 0; border-radius: 4px; background: var(--pink-light); color: var(--ink); font: 700 12px var(--sans); cursor: pointer; }
+.admin-page label { display: inline-block; margin-bottom: 8px; color: var(--ink); font-size: 13px; font-weight: 800; letter-spacing: .02em; }
+.admin-page label + br { display: none; }
+.admin-page form > p, .admin-page fieldset > p { margin-bottom: 24px; }
+.admin-page fieldset { min-width: 0; margin: 32px 0; padding: 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--cream); }
+.admin-page legend { max-width: 100%; padding-inline: 10px; color: var(--rose); font: 27px/1.25 var(--serif); }
+.admin-page figure { width: fit-content; max-width: 100%; margin: 20px 0; padding: 10px; border: 1px solid var(--line); background: #fff; box-shadow: 3px 4px 0 var(--pink-light); }
+.admin-page figure img { display: block; max-width: 100%; max-height: 260px; width: auto; object-fit: contain; }
+.admin-page figcaption { margin-top: 8px; color: var(--muted); font: 19px var(--hand); }
+.admin-page :is(.admin-help, [id$="-help"]) { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.admin-page [role="alert"]:not([hidden]), .admin-notice { margin: 0 0 24px; padding: 16px 20px; border: 1px solid var(--pink); border-radius: 6px; background: var(--pink-light); color: #733f4d; overflow-wrap: anywhere; }
+.admin-page [role="alert"] p { margin-bottom: 10px; }
+.admin-page [role="alert"] a { text-decoration: underline; }
+.admin-page [aria-invalid="true"] { border-color: #923c50; }
+.admin-page :disabled { opacity: .65; cursor: wait; }
+.admin-actions, .admin-toolbar { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 14px; }
+.admin-actions { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+.admin-actions--top { margin-top: 0; margin-bottom: 24px; padding-top: 0; padding-bottom: 24px; border-top: 0; border-bottom: 1px solid var(--line); }
+.admin-action-note { flex: 1 1 240px; margin: 0 !important; color: var(--muted); font: 23px/1.4 var(--hand); }
+.admin-toolbar { justify-content: flex-start; margin-block: 24px 32px; }
+.admin-post-list { margin: 0; padding: 0; list-style: none; }
+.admin-post-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px 24px; padding: 24px 0; border-top: 1px solid var(--line); }
+.admin-post-row > p { margin: 0; }
+.admin-post-details { flex: 1 1 300px; min-width: 0; overflow-wrap: anywhere; }
+.admin-page .admin-post-details strong { display: inline-block; margin-bottom: 8px; color: var(--ink); font: 23px/1.35 var(--serif); }
+.admin-post-details > span { color: var(--muted); font-size: 12px; }
+.admin-status { display: inline-block; margin-right: 8px; padding: 3px 9px; border-radius: 20px; background: var(--lavender); color: #605068; font-size: 10px; font-weight: 800; letter-spacing: .06em; }
+.admin-status--published { background: var(--sage); color: #4b6042; }
+.admin-row-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; color: var(--rose); font-size: 13px; font-weight: 800; }
+.admin-row-actions a { padding-block: 8px; }
+.admin-page .admin-delete-trigger { min-height: 44px; font: inherit; }
+.admin-logout { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+.admin-login .admin-main { max-width: 560px; }
+.admin-login .admin-paper { position: relative; }
+.admin-login .admin-paper::before { content: ""; position: absolute; top: -12px; left: calc(50% - 38px); width: 76px; height: 24px; transform: rotate(-4deg); background: rgba(232, 169, 184, .5); }
+.admin-login form > .button { width: 100%; margin-top: 8px; }
+@media (max-width: 600px) {
+  .admin-page .site-header { height: auto; min-height: 76px; padding: 18px 20px; gap: 14px; flex-wrap: wrap; }
+  .admin-nav { gap: 14px; font-size: 11px; }
+  .admin-page .admin-main { width: calc(100% - 32px); padding-top: 30px; }
+  .admin-page .simple-post-header .article-back-link { margin-bottom: 28px; }
+  .admin-page .admin-paper { padding: 22px 18px; }
+  .admin-page fieldset { padding: 20px 14px; }
+  .admin-page legend { font-size: 24px; }
+  .admin-actions > .button { flex: 1 1 100%; }
+  .admin-toolbar > .button { flex: 1 1 160px; }
+  .admin-post-details { flex-basis: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-page *, .admin-page *::before, .admin-page *::after { scroll-behavior: auto; transition: none; }
+}

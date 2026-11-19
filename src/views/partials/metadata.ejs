@@ -1,0 +1,77 @@
+<%
+  const privateMetadataPage =
+    (typeof adminStyles !== 'undefined' && adminStyles) ||
+    (typeof preview !== 'undefined' && preview) ||
+    (typeof privatePage !== 'undefined' && privatePage);
+
+  const publicMetadata =
+    !privateMetadataPage &&
+    typeof pageMetadata !== 'undefined' &&
+    pageMetadata
+      ? pageMetadata
+      : null;
+%>
+
+<% if (publicMetadata) { %>
+  <title><%= publicMetadata.title %></title>
+  <meta
+    name="description"
+    content="<%= publicMetadata.description %>"
+  >
+
+  <link
+    rel="canonical"
+    href="<%= publicMetadata.canonicalUrl %>"
+  >
+
+  <meta
+    property="og:title"
+    content="<%= publicMetadata.title %>"
+  >
+  <meta
+    property="og:description"
+    content="<%= publicMetadata.description %>"
+  >
+  <meta
+    property="og:type"
+    content="<%= publicMetadata.type %>"
+  >
+  <meta
+    property="og:url"
+    content="<%= publicMetadata.canonicalUrl %>"
+  >
+  <meta
+    property="og:site_name"
+    content="<%= publicMetadata.siteName %>"
+  >
+  <meta
+    property="og:image"
+    content="<%= publicMetadata.image.url %>"
+  >
+  <meta
+    property="og:image:alt"
+    content="<%= publicMetadata.image.alt %>"
+  >
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta
+    name="twitter:title"
+    content="<%= publicMetadata.title %>"
+  >
+  <meta
+    name="twitter:description"
+    content="<%= publicMetadata.description %>"
+  >
+  <meta
+    name="twitter:image"
+    content="<%= publicMetadata.image.url %>"
+  >
+  <meta
+    name="twitter:image:alt"
+    content="<%= publicMetadata.image.alt %>"
+  >
+<% } else { %>
+  <title>XOJazzle</title>
+  <meta name="description" content="XOJazzle website.">
+  <meta name="robots" content="noindex, nofollow">
+<% } %>

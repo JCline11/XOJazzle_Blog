@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<%- include('../../partials/head', { adminStyles: true }) %>
+<body class="admin-page admin-editor">
+  <div class="paper-grain" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/admin">
+      <span class="brand-mark">✿</span>
+      <span>XOJazzle<span class="brand-dot">.</span></span>
+    </a>
+    <nav class="admin-nav" aria-label="Studio navigation">
+      <a href="/admin">dashboard</a>
+      <a href="/">view blog <span aria-hidden="true">↗</span></a>
+    </nav>
+    <p class="header-note">private studio <span>♡</span></p>
+  </header>
+
+  <main class="simple-post-page admin-main">
+    <section
+      class="simple-post-header section-wrap"
+      aria-labelledby="homepage-form-title"
+    >
+      <a class="article-back-link" href="/admin">
+        <span aria-hidden="true">←</span> dashboard
+      </a>
+
+      <div class="simple-post-title">
+        <p class="eyebrow">homepage editor</p>
+        <h1 id="homepage-form-title">
+          Edit the <em>homepage</em>
+        </h1>
+      </div>
+    </section>
+
+    <section class="simple-post-body">
+      <div class="simple-post-note admin-paper">
+        <% if (error) { %>
+          <p id="form-error" role="alert"><%= error %></p>
+          <p><a href="/admin/homepage">Reload the editor with the latest saved content</a> (discards unsaved entries).</p>
+          <p>
+            Your text entries are preserved.
+            Select any replacement images again before retrying.
+          </p>
+        <% } %>
+
+        <%
+          const sections = [
+            {
+              title: 'Site profile',
+              fields: [
+                { name: 'siteName', label: 'Site name', max: 100 },
+                { name: 'heroText', label: 'Hero introduction', max: 1000, rows: 4 },
+                { name: 'aboutContent', label: 'About content', max: 5000, rows: 7 },
+                { image: 'profileImage', label: 'Profile image' },
+                { name: 'contactEmail', label: 'Contact email', type: 'email', max: 254, optional: true },
+                { name: 'instagramUrl', label: 'Instagram URL', type: 'url', max: 2048 },
+                { name: 'tiktokUrl', label: 'TikTok URL', type: 'url', max: 2048 },
+                { name: 'youtubeUrl', label: 'YouTube URL', type: 'url', max: 2048 }
+              ]
+            },
+            {
+              title: 'Hero collage',
+              fields: [
+                { image: 'heroPrimaryImage', label: 'Primary image' },
+                { name: 'heroPrimaryAltText', label: 'Primary alt text', max: 300 },
+                { name: 'heroPrimaryCaption', label: 'Primary caption', max: 300 },
+                { image: 'heroSecondaryImage', label: 'Secondary image' },
+                { name: 'heroSecondaryAltText', label: 'Secondary alt text', max: 300 },
+                { name: 'heroSecondaryCaption', label: 'Secondary caption', max: 300 },
+                { name: 'heroJournalDate', label: 'Journal date', max: 100 },
+                { name: 'heroJournalText', label: 'Journal text', max: 500, rows: 3 },
+                { name: 'heroJournalEmphasis', label: 'Journal emphasis', max: 300 }
+              ]
+            },
+            {
+              title: 'Currently Reading',
+              fields: [
+                { name: 'readingTitle', label: 'Title', max: 300 },
+                { image: 'readingCoverImage', label: 'Reading cover image' },
+                { name: 'readingCoverAltText', label: 'Cover alt text', max: 300 },
+                { name: 'readingNote', label: 'Note', max: 2000, rows: 4 }
+              ]
+            },
+            {
+              title: 'Currently Watching',
+              fields: [
+                { name: 'watchingTitle', label: 'Title', max: 300 },
+                { image: 'watchingCoverImage', label: 'Watching cover image' },
+                { name: 'watchingCoverAltText', label: 'Cover alt text', max: 300 },
+                { name: 'watchingNote', label: 'Note', max: 2000, rows: 4 }
+              ]
+            },
+            {
+              title: 'Most anticipated releases',
+              fields: [
+                { name: 'anticipatedBooks', label: 'Books', max: 2000, rows: 4 },
+                { name: 'anticipatedMovies', label: 'Movies', max: 2000, rows: 4 },
+                { name: 'anticipatedTv', label: 'TV', max: 2000, rows: 4 }
+              ]
+            }
+          ];
+        %>
+
+        <form
+          method="post"
+          action="/admin/homepage"
+          enctype="multipart/form-data"
+          <% if (error) { %>aria-describedby="form-error"<% } %>
+        >
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="homepageVersion" value="<%= homepageVersion %>">
+
+          <div class="admin-actions admin-actions--top">
+            <p class="admin-action-note">A little refresh for your corner of the internet.</p>
+            <a class="button button-secondary" href="/admin">discard changes</a>
+          </div>
+
+          <p class="admin-help">
+            Choose files only for pictures you want to replace.
+            Leave the other image inputs empty.
+            JPEG, PNG, WebP, HEIC, and HEIF are supported.
+            Each image must be at most 5 MiB and 25 million pixels.
+          </p>
+
+          <% sections.forEach((section) => { %>
+            <fieldset>
+              <legend><%= section.title %></legend>
+
+              <% section.fields.forEach((field) => { %>
+                <% if (field.image) { %>
+                  <% const current = currentImages[field.image]; %>
+
+                  <% if (current.url) { %>
+                    <figure>
+                      <img
+                        src="<%= current.url %>"
+                        alt="Current <%= field.label.toLowerCase() %>"
+                        width="200"
+                        loading="lazy"
+                      >
+                      <figcaption>Current <%= field.label.toLowerCase() %></figcaption>
+                    </figure>
+                  <% } %>
+
+                  <p>
+                    <label for="<%= field.image %>">
+                      <%= field.label %>
+                    </label><br>
+
+                    <input
+                      id="<%= field.image %>"
+                      name="<%= field.image %>"
+                      type="file"
+                      accept="<%= imageAccept %>"
+                      aria-describedby="<%= field.image %>-help"
+                    >
+                  </p>
+
+                  <p id="<%= field.image %>-help">
+                    Leave empty to keep the current image.
+                  </p>
+                <% } else { %>
+                  <p>
+                    <label for="<%= field.name %>">
+                      <%= field.label %>
+                    </label><br>
+
+                    <% if (field.rows) { %>
+                      <textarea
+                        id="<%= field.name %>"
+                        name="<%= field.name %>"
+                        rows="<%= field.rows %>"
+                        maxlength="<%= field.max %>"
+                        required
+                      ><%= homepage[field.name] %></textarea>
+                    <% } else { %>
+                      <input
+                        id="<%= field.name %>"
+                        name="<%= field.name %>"
+                        type="<%= field.type || 'text' %>"
+                        value="<%= homepage[field.name] %>"
+                        maxlength="<%= field.max %>"
+                        <% if (!field.optional) { %>required<% } %>
+                      >
+                    <% } %>
+                  </p>
+                <% } %>
+              <% }) %>
+            </fieldset>
+          <% }) %>
+
+          <div class="admin-actions">
+            <a class="button button-secondary" href="/admin">discard changes</a>
+            <button class="button button-primary" type="submit">
+              save homepage <span aria-hidden="true">♡</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

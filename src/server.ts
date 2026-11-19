@@ -1,41 +1,100 @@
-import express from "express";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { showHomePage, showPost} from "./controllers/content.controller.ts";
+import { createServer } from "node:http";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import app from "./app.ts";
 
-const app = express();
+import { env } from "./config/env.ts";
+import { sessionStore } from "./config/session.ts";
 
-// configure ejs
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views", "pages"));
+import { lifecycle } from "./lib/lifecycle.ts";
+import { pgPool } from "./lib/postgres.ts";
+import prisma from "./lib/prisma.ts";
 
-// Serve static files
-app.use(express.static(path.join(__dirname,  "..", "public")));
+import {
+  closeR2Clients
+} from "./services/r2-image-storage.ts";
 
-// Homepage route
-app.get("/", showHomePage);
+const server = createServer((req, res) => {
+  if (lifecycle.isStopping()) {
+    lifecycle.rejectRequest(res);
+    return;
+  }
 
-// Post route
-app.get("/posts/:slug", showPost);
-
-app.use((
-  error: unknown,
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => {
-  console.error(error);
-
-  res.status(500).send(
-    "Something went wrong while loading the page."
-  );
+  app(req, res);
 });
 
-const PORT = 3000;
+async function closeResources(): Promise<void> {
+  const actions: Array<[string, () => unknown]> = [
+    ["session store", () => sessionStore.close()],
+    ["R2 clients", () => closeR2Clients()],
+    ["Prisma client", () => prisma.$disconnect()],
+    ["PostgreSQL pool", () => pgPool.end()]
+  ];
 
-app.listen(PORT, () => {
-	console.log(`Server running at http://localhost:${PORT}`);
+  let failed = false;
+
+  for (const [name, close] of actions) {
+    try {
+      await close();
+    } catch {
+      failed = true;
+      console.error(`Failed to close ${name}.`);
+    }
+  }
+
+  if (failed) {
+    throw new Error("Resource cleanup failed.");
+  }
+}
+
+let stopStarted = false;
+let exitStatus = 0;
+
+function stop(reason: string, status = 0): void {
+  exitStatus = Math.max(exitStatus, status);
+
+  if (stopStarted) {
+    return;
+  }
+
+  stopStarted = true;
+
+  console.log(
+    `Shutdown requested: ${reason}. ` +
+    `Budget: ${env.SHUTDOWN_TIMEOUT_MS} ms.`
+  );
+
+  void lifecycle.shutdown(
+    server,
+    closeResources,
+    {
+      timeoutMs: env.SHUTDOWN_TIMEOUT_MS,
+
+      onTimeout() {
+        console.error("Shutdown deadline exceeded.");
+        process.exit(1);
+      }
+    }
+  ).then(
+    () => {
+      console.log("Shutdown complete.");
+      process.exitCode = exitStatus;
+    },
+    () => {
+      console.error("Shutdown failed.");
+      process.exit(1);
+    }
+  );
+}
+
+process.on("SIGTERM", () => stop("SIGTERM"));
+process.on("SIGINT", () => stop("SIGINT"));
+
+server.on("error", () => {
+  stop("HTTP server error", 1);
+});
+
+server.listen(env.PORT, () => {
+  console.log(
+    `Server running at http://localhost:${env.PORT}`
+  );
 });

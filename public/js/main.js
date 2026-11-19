@@ -1,55 +1,102 @@
-// Mobile navigation
 const menuToggle = document.querySelector(".menu-toggle");
 const siteNav = document.querySelector(".site-nav");
+const publicHeader = document.querySelector(".public-site-header");
 
-menuToggle?.addEventListener("click", () => {
-  const isOpen = siteNav.classList.toggle("open");
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-});
+if (
+  menuToggle &&
+  siteNav &&
+  publicHeader &&
+  typeof window.matchMedia === "function"
+) {
+  const mobile = window.matchMedia("(max-width: 800px)");
+  const links = Array.from(
+    document.querySelectorAll(".site-nav a")
+  );
 
-document.querySelectorAll(".site-nav a").forEach((link) => {
-  link.addEventListener("click", () => {
-    siteNav.classList.remove("open");
-    menuToggle?.setAttribute("aria-expanded", "false");
-    document.querySelectorAll(".site-nav a").forEach((item) => item.classList.remove("active"));
-    link.classList.add("active");
+  let open = false;
+
+  function renderNavigation() {
+    const expanded = mobile.matches && open;
+
+    const toggleHadFocus =
+      document.activeElement === menuToggle;
+
+    const navigationHadFocus =
+      siteNav.contains(document.activeElement);
+
+    menuToggle.hidden = !mobile.matches;
+    siteNav.hidden = mobile.matches && !expanded;
+
+    siteNav.classList.toggle("open", expanded);
+
+    menuToggle.setAttribute(
+      "aria-expanded",
+      String(expanded)
+    );
+
+    if (siteNav.hidden && navigationHadFocus) {
+      menuToggle.focus();
+    }
+
+    if (!mobile.matches && toggleHadFocus) {
+      links[0]?.focus();
+    }
+  }
+
+  function closeNavigation(restoreFocus = false) {
+    open = false;
+    renderNavigation();
+
+    if (restoreFocus && mobile.matches) {
+      menuToggle.focus();
+    }
+  }
+
+  menuToggle.addEventListener("click", () => {
+    open = !open;
+    renderNavigation();
   });
-});
 
-// Latest-note category filters
-const filters = document.querySelectorAll(".filter");
-const posts = document.querySelectorAll(".post-card");
-
-filters.forEach((filter) => {
-  filter.addEventListener("click", () => {
-    const selectedCategory = filter.dataset.filter;
-    filters.forEach((item) => item.classList.toggle("active", item === filter));
-    posts.forEach((post) => {
-      const shouldShow = selectedCategory === "all" || post.dataset.category === selectedCategory;
-      post.style.display = shouldShow ? "" : "none";
+  links.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (mobile.matches) {
+        closeNavigation();
+      }
     });
   });
-});
 
-// Reveal scrapbook elements as they enter the viewport.
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("is-visible");
-      revealObserver.unobserve(entry.target);
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      mobile.matches &&
+      open
+    ) {
+      event.preventDefault();
+      closeNavigation(true);
     }
   });
-}, { threshold: 0.08 });
 
-document.querySelectorAll(".love-card, .post-card, .diary-entry, .about-photo").forEach((element) => {
-  element.classList.add("reveal");
-  revealObserver.observe(element);
-});
+  document.addEventListener("click", (event) => {
+    if (!publicHeader.contains(event.target)) {
+      closeNavigation();
+    }
+  });
 
-// Keeping motion here makes it easy to find and adjust later.
-const revealStyles = document.createElement("style");
-revealStyles.textContent = `
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .65s ease, transform .65s ease; }
-  .reveal.is-visible { opacity: 1; transform: none; }
-`;
-document.head.appendChild(revealStyles);
+  document.addEventListener("focusin", (event) => {
+    if (
+      mobile.matches &&
+      open &&
+      !publicHeader.contains(event.target)
+    ) {
+      closeNavigation();
+    }
+  });
+
+  mobile.addEventListener("change", () => {
+    open = false;
+    renderNavigation();
+  });
+
+  publicHeader.classList.add("navigation-ready");
+  renderNavigation();
+}

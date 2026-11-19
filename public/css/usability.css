@@ -1,0 +1,360 @@
+:root {
+  --rose: #8d4658;
+  --muted: #68595e;
+  --sage-dark: #4d6347;
+}
+
+/* Expose genuine overflow so it can be fixed at its source. */
+body {
+  overflow-x: visible;
+}
+
+:is(a, button, input, textarea, select, summary):focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: 4px;
+}
+
+#main-content:focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: -3px;
+}
+
+.site-footer a:focus-visible {
+  outline-color: #fff;
+}
+
+/* Comfortable standalone links and controls. */
+:is(
+  button,
+  .button,
+  .brand,
+  .site-nav a,
+  .filter,
+  .read-more,
+  .admin-nav a,
+  .admin-row-actions a,
+  .article-back-link,
+  .simple-post-home,
+  .footer-top nav a
+) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+button,
+.menu-toggle,
+.admin-delete-trigger {
+  min-width: 44px;
+}
+
+.read-more {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.admin-page a:not(.button):not(.brand) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.admin-page :is(input, textarea, select):not([type="hidden"]) {
+  border-color: var(--muted);
+}
+
+.admin-page :is(input, textarea, select)[aria-invalid="true"] {
+  border-color: #923c50;
+}
+
+/* Readable supporting copy. */
+.post-body p,
+.watchlist-card p,
+.watchlist-intro,
+.section-subtitle,
+.about-copy p {
+  font-size: 1rem;
+}
+
+.love-note p {
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+:is(
+  .eyebrow,
+  .post-tag,
+  .post-body time,
+  .read-more,
+  .filter,
+  .article-meta,
+  .article-back-link,
+  .simple-post-home,
+  .footer-bottom
+) {
+  font-size: .75rem;
+}
+
+.site-nav,
+.admin-nav,
+.admin-row-actions,
+.footer-top nav {
+  font-size: .8125rem;
+}
+
+/* Long author-entered content must fit its container. */
+h1,
+h2,
+h3,
+p,
+figcaption,
+.admin-post-details {
+  overflow-wrap: anywhere;
+}
+
+.loving-grid > *,
+.posts-grid > *,
+.about-section > *,
+.watchlist-inner > *,
+.simple-post-title,
+.love-note {
+  min-width: 0;
+}
+
+.love-note {
+  flex: 1 1 0;
+}
+
+.about-photo {
+  width: min(390px, 100%);
+  min-width: 0;
+}
+
+.footer-top nav {
+  flex-wrap: wrap;
+}
+
+/* Default to an expanding layout when the component has little room. */
+.hero-visual {
+  container: hero-visual / inline-size;
+  min-width: 0;
+}
+
+.hero-collage {
+  --hero-layout: flow;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  align-items: start;
+  gap: 24px 18px;
+  width: min(500px, 100%);
+  height: auto;
+  min-width: 0;
+  margin: 20px auto;
+  padding: 24px;
+  transform: none;
+  overflow: visible;
+}
+
+.hero-collage .polaroid {
+  position: relative;
+  inset: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero-collage > :is(.sunburst, .sticker, .tape, .doodle) {
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-collage .polaroid-main {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  justify-self: end;
+  width: min(285px, 100%);
+  transform: rotate(-1deg);
+}
+
+.hero-collage .polaroid-main:hover {
+  transform: rotate(-1deg);
+}
+
+.hero-collage .polaroid-small {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  width: min(160px, 100%);
+  transform: rotate(1deg);
+}
+
+.hero-collage .polaroid-main img {
+  height: auto;
+  aspect-ratio: 263 / 330;
+}
+
+.hero-collage .polaroid-small img {
+  height: auto;
+  aspect-ratio: 138 / 145;
+}
+
+.hero-collage .journal-scrap {
+  position: relative;
+  inset: auto;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  justify-self: end;
+  width: min(260px, 100%);
+  height: auto;
+  min-height: 150px;
+  overflow-wrap: anywhere;
+  transform: none;
+}
+
+.hero-collage .sunburst {
+  left: 0;
+  right: 0;
+  width: min(400px, 100%);
+  height: auto;
+  margin-inline: auto;
+  aspect-ratio: 1;
+}
+
+/* Restore the original scrapbook composition when there is room for it.
+   Longer copy continues to use the expanding layout above. */
+@container hero-visual (min-width: 540px) {
+  .hero-collage--overlap {
+    --hero-layout: overlap;
+    display: block;
+    width: 100%;
+    height: 520px;
+    margin-block: 0;
+    padding: 0;
+  }
+
+  .hero-collage--overlap .polaroid-main {
+    position: absolute;
+    top: 65px;
+    left: 145px;
+    width: 285px;
+    transform: rotate(-5deg);
+  }
+
+  .hero-collage--overlap .polaroid-main:hover {
+    transform: rotate(-2deg) translateY(-5px);
+  }
+
+  /* Keep the caption in the space between the two overlapping papers. */
+  .hero-collage--overlap .polaroid-main figcaption {
+    padding-inline: 60px 100px;
+  }
+
+  .hero-collage--overlap .polaroid-small {
+    position: absolute;
+    top: 310px;
+    left: 31px;
+    width: 160px;
+    transform: rotate(8deg);
+  }
+
+  .hero-collage--overlap .journal-scrap {
+    position: absolute;
+    right: 10px;
+    bottom: 59px;
+    width: 190px;
+    height: 150px;
+    margin: 0;
+    transform: rotate(7deg);
+  }
+
+  .hero-collage--overlap .sunburst {
+    top: 60px;
+    left: 95px;
+    right: auto;
+    width: 400px;
+    margin-inline: 0;
+  }
+
+  .hero-collage--overlap .sticker,
+  .hero-collage--overlap .tape {
+    z-index: 9;
+  }
+
+  .hero-collage--overlap .tape {
+    z-index: 8;
+  }
+}
+
+/* Captions can grow onto multiple lines. */
+.simple-post-cover {
+  padding-bottom: 13px;
+}
+
+.simple-post-cover figcaption {
+  position: static;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Cards remain visible if an older page still has reveal classes. */
+.reveal,
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 801px) {
+  .hero {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .hero-collage .polaroid,
+  .hero-collage .polaroid:hover {
+    transform: none;
+  }
+
+  .public-site-header.navigation-ready {
+    height: auto;
+    min-height: 72px;
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+
+  .photo-caption {
+    right: 0;
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  html:focus-within {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .button:hover,
+  .post-card:hover,
+  .post-card:hover .post-image img,
+  .article-back-link:hover,
+  .article-back-link:hover span {
+    transform: none;
+  }
+
+  .hero-collage--overlap .polaroid-main:hover {
+    transform: rotate(-5deg);
+  }
+}

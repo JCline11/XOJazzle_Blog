@@ -4,11 +4,23 @@
   "description": "A blog website for social media influencer XOJazzle",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
-    "test": "node --test",
-    "prisma:generate": "prisma generate"
+    "build": "npm run prisma:validate && npm run prisma:generate && npm run typecheck",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts",
+    "test:integration": "node --test --test-concurrency=1 test/integration/*.test.ts",
+    "test:seed": "node --test test/seed/*.test.ts",
+    "test:slugs": "node --test test/slugs/*.test.ts",
+    "test:browser": "node --test --test-concurrency=1 test/browser/*.test.ts",
+    "test:all": "npm test && npm run test:integration && npm run test:seed && npm run test:slugs && npm run test:browser",
+    "prisma:validate": "prisma validate --config prisma7.config.ts",
+    "prisma:generate": "prisma generate --config prisma7.config.ts",
+    "admin:set-password": "tsx src/scripts/set-admin-password.ts"
   },
   "overrides": {
     "deepmerge-ts": "^8.0.2",
@@ -26,6 +38,7 @@
   },
   "homepage": "https://github.com/JCline11/XOJazzle_Blog#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1161.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "bcrypt": "^6.0.0",
@@ -35,19 +48,26 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.1",
     "express-session": "^1.19.0",
+    "file-type": "22.3.0",
+    "heic-decode": "2.1.0",
     "helmet": "^8.3.0",
     "method-override": "^3.0.0",
+    "multer": "2.5.0",
     "pg": "^8.23.1",
+    "sharp": "0.35.5",
+    "tsx": "^4.23.15",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/multer": "2.3.0",
     "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
     "prisma": "^7.10.0",
     "supertest": "^7.3.1",
-    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "allowScripts": {

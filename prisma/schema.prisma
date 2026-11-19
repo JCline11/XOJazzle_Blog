@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  runtime  = "nodejs"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  runtime             = "nodejs"
   moduleFormat        = "esm"
   importFileExtension = "ts"
 }
@@ -18,6 +18,23 @@ model AdminUser {
   updatedAt    DateTime @updatedAt
 }
 
+model LoginRateLimit {
+  key     String   @id
+  hits    Int
+  resetAt DateTime @db.Timestamptz(3)
+
+  @@index([resetAt])
+}
+
+model Session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+  @@map("session")
+}
+
 model Post {
   id               Int               @id @default(autoincrement())
   title            String
@@ -25,29 +42,71 @@ model Post {
   excerpt          String
   body             String
   featuredImageUrl String?
+  featuredImageKey String?
   altText          String?
-  imageCaption 	   String?
+  imageCaption     String?
   category         PostCategory
   status           PublicationStatus @default(DRAFT)
   publishedAt      DateTime?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  pullQuote		   String?
-  rating		   Int?
-  ratingNote   	   String?
-  closingNote	   String?
+  pullQuote        String?
+  rating           Int?
+  ratingNote       String?
+  closingNote      String?
+  slugs            PostSlug[]
+}
+
+model PostSlug {
+  slug   String @id
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([postId])
+}
+
+model CurrentlyLoving {
+  id            Int                 @id @default(autoincrement())
+  kind          CurrentlyLovingKind @unique
+  title         String
+  coverImageUrl String
+  coverImageKey String?
+  coverAltText  String
+  note          String
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model AnticipatedRelease {
+  id        Int                    @id @default(autoincrement())
+  kind      AnticipatedReleaseKind @unique
+  text      String
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
 }
 
 model SiteProfile {
-  id              Int      @id @default(autoincrement())
-  siteName        String
-  heroText        String
-  aboutContent    String
-  profileImageUrl String?
-  contactEmail    String?
-  socialLinks     Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                    Int      @id @default(autoincrement())
+  siteName              String
+  heroText              String
+  aboutContent          String
+  profileImageUrl       String?
+  profileImageKey       String?
+  contactEmail          String?
+  socialLinks           Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  heroPrimaryImageUrl   String
+  heroPrimaryImageKey   String?
+  heroPrimaryAltText    String
+  heroPrimaryCaption    String
+  heroSecondaryImageUrl String
+  heroSecondaryImageKey String?
+  heroSecondaryAltText  String
+  heroSecondaryCaption  String
+  heroJournalDate       String
+  heroJournalText       String
+  heroJournalEmphasis   String
 }
 
 enum PostCategory {
@@ -60,4 +119,15 @@ enum PostCategory {
 enum PublicationStatus {
   DRAFT
   PUBLISHED
+}
+
+enum CurrentlyLovingKind {
+  READING
+  WATCHING
+}
+
+enum AnticipatedReleaseKind {
+  BOOKS
+  MOVIES
+  TV
 }
