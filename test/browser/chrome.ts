@@ -130,6 +130,28 @@ export async function launchChrome() {
   let finished = false;
   let processStatus = "still running";
   let stderr = "";
+  let endpoint = "";
+
+  function localBrowserEndpoint(value: string): string {
+    try {
+      const url = new URL(value);
+      if (
+        url.protocol === "ws:" &&
+        url.hostname === "127.0.0.1" &&
+        url.port !== "" &&
+        url.username === "" &&
+        url.password === "" &&
+        url.search === "" &&
+        url.hash === "" &&
+        /^\/devtools\/browser\/[a-zA-Z0-9-]+$/.test(url.pathname)
+      ) {
+        return url.href;
+      }
+    } catch {
+      // Ignore incomplete or invalid endpoint data.
+    }
+    return "";
+  }
 
   function startupError(message: string): Error {
     return new Error(
@@ -166,6 +188,10 @@ export async function launchChrome() {
     processHandle.stderr?.setEncoding("utf8");
     processHandle.stderr?.on("data", (chunk: string) => {
       stderr = (stderr + chunk).slice(-8192);
+      const match = stderr.match(/DevTools listening on (ws:\/\/\S+)\r?\n/);
+      if (!endpoint && match) {
+        endpoint = localBrowserEndpoint(match[1]);
+      }
     });
 
     exited = new Promise<void>(resolve => {
@@ -182,30 +208,46 @@ export async function launchChrome() {
       });
     });
 
-    let endpoint = "";
-    for (let attempt = 0; attempt < 100; attempt++) {
-      if (finished) break;
+    const startupDeadline = Date.now() + 30_000;
+    while (!endpoint && !finished && Date.now() < startupDeadline) {
       try {
         const [port, route] = (await readFile(path.join(profile, "DevToolsActivePort"), "utf8"))
           .trim().split("\n").map(line => line.trim());
-        if (port && route?.startsWith("/devtools/browser/")) {
-          endpoint = "ws://127.0.0.1:" + port + route;
-          break;
+        if (!endpoint && port && route) {
+          endpoint = localBrowserEndpoint("ws://127.0.0.1:" + port + route);
         }
       } catch {
-        // Chrome may not have written the endpoint file yet.
+        // The endpoint can also arrive through Chrome's stderr.
       }
-      await new Promise(resolve => setTimeout(resolve, 100));
+      if (!endpoint && !finished) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
     }
 
+    if (finished) {
+      throw startupError("Chrome exited during startup.");
+    }
     if (!endpoint) {
-      throw startupError("Chrome did not expose its debugging endpoint during startup.");
+      throw startupError("Chrome did not expose its debugging endpoint within 30 seconds.");
     }
 
     const socket = new WebSocket(endpoint);
     await new Promise<void>((resolve, reject) => {
-      socket.addEventListener("open", () => resolve(), { once: true });
-      socket.addEventListener("error", () => reject(new Error("Could not connect to test browser.")), { once: true });
+      const timeout = setTimeout(() => {
+        reject(startupError("Chrome debugger connection timed out."));
+      }, 15_000);
+      socket.addEventListener("open", () => {
+        clearTimeout(timeout);
+        resolve();
+      }, { once: true });
+      socket.addEventListener("error", () => {
+        clearTimeout(timeout);
+        reject(startupError("Could not connect to test browser."));
+      }, { once: true });
+      socket.addEventListener("close", () => {
+        clearTimeout(timeout);
+        reject(startupError("Chrome debugger closed during connection."));
+      }, { once: true });
     });
     connection = new Connection(socket);
     return {

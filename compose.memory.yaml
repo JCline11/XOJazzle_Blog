@@ -1,0 +1,73 @@
+name: xojazzle-memory
+
+services:
+  db:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_USER: memory_user
+      POSTGRES_PASSWORD: memory_only_password
+      POSTGRES_DB: xojazzle_memory
+    volumes:
+      - memory-db:/var/lib/postgresql
+    networks:
+      - database
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U memory_user -d xojazzle_memory
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  migrate:
+    image: xojazzle-memory:local
+    pull_policy: never
+    profiles:
+      - tools
+    environment:
+      DATABASE_URL: postgresql://memory_user:memory_only_password@db:5432/xojazzle_memory
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - database
+    command:
+      - ./node_modules/.bin/prisma
+      - migrate
+      - deploy
+      - --config
+      - prisma7.config.ts
+
+  app:
+    image: xojazzle-memory:local
+    pull_policy: never
+    init: true
+    restart: "no"
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 0.5
+    stop_grace_period: 30s
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+      SITE_ORIGIN: http://localhost:3100
+      DATABASE_URL: postgresql://memory_user:memory_only_password@db:5432/xojazzle_memory
+      SESSION_SECRET: memory-test-only-session-secret-at-least-32-characters
+      SHUTDOWN_TIMEOUT_MS: "25000"
+    ports:
+      - "127.0.0.1:3100:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - database
+      - frontend
+
+volumes:
+  memory-db:
+
+networks:
+  database:
+    internal: true
+  frontend:

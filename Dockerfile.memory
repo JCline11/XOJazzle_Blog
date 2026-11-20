@@ -1,0 +1,21 @@
+FROM node:24.21.0-bookworm
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --include=dev --no-audit
+
+COPY tsconfig.json prisma7.config.ts ./
+COPY prisma/ ./prisma/
+COPY src/ ./src/
+COPY test/ ./test/
+COPY public/ ./public/
+
+RUN DATABASE_URL=postgresql://build_only:build_only@127.0.0.1:5432/build_only npm run build
+
+USER node
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
