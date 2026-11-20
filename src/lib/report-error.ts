@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 type ErrorEvent =
   | "database_check_error"
   | "database_check_cleanup_error"
+  | "admin_password_error"
+  | "admin_password_cleanup_error"
   | "http_error"
   | "postgres_pool_error"
   | "session_store_error";
